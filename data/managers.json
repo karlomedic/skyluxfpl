@@ -4,62 +4,80 @@
   "managers": [
     {
       "name": "Robert Tokić",
+      "team": "Tekstilac Derventa",
       "titles": 2,
-      "persona": ["self-styled Special One", "serial contender", "loves a narrative"],
-      "running_jokes": ["Tradegate / kumovska era as league lore", "one title sealed by a Liverpool goalkeeper's 90th-minute goal", "Tarik Muharemović = Rolls-Royce"],
-      "rivalries": ["Ivan Vrdoljak", "Jakov Vrdoljak"],
-      "tone": "Roast hard. Call back to the Special One branding, lucky-title mythology and Tradegate lore whenever results allow. Keep Muharemović jokes football/fantasy-based rather than identity-based."
+      "title_seasons": ["2020/21", "2023/24"],
+      "persona": ["self-styled The Special One", "serial contender", "loves a narrative", "rarely panics after one bad week"],
+      "running_jokes": ["Tradegate / controversial-title lore must be framed as old league mythology, not a verified allegation", "one title sealed by a Liverpool goalkeeper's 90th-minute goal", "Tarik Muharemović = Rolls-Royce", "Special One press-conference energy even after defeats"],
+      "rivalries": ["Ivan Vrdoljak", "Jakov Vrdoljak", "Petar Medić"],
+      "tone": "Roast hard. Call back to The Special One branding, lucky-title mythology and old Tradegate lore whenever results allow. If Muharemović is relevant, use Rolls-Royce/garage/engine metaphors and keep the joke football-based."
     },
     {
       "name": "Petar Medić",
+      "team": "Markuševec City",
       "titles": 1,
-      "persona": ["league president", "always engaged", "permanent trader"],
-      "running_jokes": ["won the inaugural season and has been chasing the next one ever since", "lost a title to Kristian Radoš on goal difference with equal points", "everyone is always available for trade"],
-      "tone": "Use president/front-office metaphors, transfer-market chaos and the eternal search for a second title."
+      "title_seasons": ["2017/18"],
+      "persona": ["league president", "founder", "always engaged", "permanent trader", "press-conference natural"],
+      "running_jokes": ["won the inaugural season and has been chasing the next one ever since", "Manchester United comparison: institution and old glory", "lost a title to Kristian Radoš on goal difference with equal points", "everyone is always available for trade", "presidential office, committees, commissions and corporate metaphors", "can overthink and over-combine"],
+      "rivalries": ["Robert Tokić", "Kristian Radoš", "Jakov Vrdoljak"],
+      "relationships": ["Jakov Vrdoljak is his wedding best man / kum and is still happy to attack the president publicly"],
+      "tone": "Use president/front-office/government metaphors, transfer-market chaos and the eternal search for a second title. Treat old governance controversies as archived league banter rather than factual accusations."
     },
     {
       "name": "Ante Babić",
+      "team": "Rubenovi obrazi",
       "titles": 0,
-      "persona": ["loudest when roasting others", "commitment is the annual question", "draft-pick grievance specialist"],
-      "running_jokes": ["success means still setting waivers late in the season", "blames fantasy and low draft picks", "maybe the excuses end when he finally gets first pick"],
-      "tone": "Lean into attendance, waiver participation and excuse-tracking. Reward sustained engagement as if it were a trophy."
+      "persona": ["loudest when roasting others", "commitment is the annual question", "draft-pick grievance specialist", "capable of explosive starts"],
+      "running_jokes": ["success means still setting waivers late in the season", "blames fantasy, schedule, injuries and especially draft position", "maybe the excuses end when he finally gets first pick", "Tottenham comparison: treated as top-tier without trophies", "strong opening weeks followed by the eternal question of whether he will still care in GW15"],
+      "tone": "Lean into attendance, waiver participation and excuse-tracking. When he starts hot, frame every win as a test of whether the film will finally make it past the trailer."
     },
     {
       "name": "Marko Mihaljević",
+      "team": "Borova Glava",
       "titles": 1,
-      "persona": ["newest member", "already a champion", "future personal trainer"],
-      "running_jokes": ["fitness-coach metaphors", "conditioning, reps, bulking and cutting applied to fantasy decisions"],
-      "tone": "Use gym/trainer metaphors often, but keep the football analysis underneath the joke."
+      "title_seasons": ["2024/25"],
+      "persona": ["newest member", "already a champion", "fitness trainer", "Hajduk emotions can outrank Fantasy for an evening"],
+      "running_jokes": ["fitness-coach metaphors", "conditioning, recovery, reps, bulking and cutting applied to fantasy decisions", "clients and training sessions competing with waiver deadlines", "if Fantasy goes badly, at least the squad can be beach-ready"],
+      "tone": "Use gym/trainer metaphors often, plus occasional football-fan distraction jokes, but keep real fantasy analysis underneath."
     },
     {
       "name": "Ivan Vrdoljak",
+      "team": "HNK Grboreški Biser",
       "titles": 0,
-      "persona": ["one of the Vrdoljak brothers", "historically lower-table", "current-season revival candidate"],
-      "running_jokes": ["would be a yo-yo club if relegation existed", "best squad in years", "Luke Milivojević-era nostalgia", "regular target of Tokić's Muharemović propaganda"],
+      "persona": ["one of the Vrdoljak brothers", "historically lower-table", "sports-background confidence", "current-season revival candidate", "not shy about calling himself a doctor of everything when results are good"],
+      "running_jokes": ["would be a yo-yo club if relegation existed", "best squad in years", "Luke Milivojević-era nostalgia", "regular target of Tokić's Muharemović propaganda", "when form is good, frame it as a possible historic escape from the basement"],
       "rivalries": ["Robert Tokić", "Jakov Vrdoljak"],
-      "tone": "Frame good runs as a historic escape from the basement and bad runs as gravity restoring order."
+      "tone": "Frame good runs as a historic escape from the basement and bad runs as gravity restoring order. Use coach/professor language sparingly when it helps the joke."
     },
     {
       "name": "Jakov Vrdoljak",
+      "team": "NK Rasulo",
       "titles": 0,
-      "persona": ["the other Vrdoljak brother", "policeman", "lower-table regular"],
-      "running_jokes": ["patrolling the lower half of the table", "second season waiting for Wirtz", "possible Wirtz family resemblance as a harmless visual gag"],
-      "rivalries": ["Robert Tokić", "Ivan Vrdoljak"],
-      "tone": "Police/patrol metaphors are welcome: checkpoints, warrants for points, missing-person reports for form, patrol routes through the bottom half."
+      "persona": ["the other Vrdoljak brother", "policeman", "lower-table regular", "elite confidence regardless of evidence", "author of the navlakuša doctrine"],
+      "running_jokes": ["patrolling the lower half of the table", "NK Rasulo is sometimes an uncomfortably accurate club name", "second season waiting for Wirtz", "possible Wirtz family resemblance as a harmless visual gag", "bad starts can be declared an intentional navlakuša", "claims success is imminent while protecting the basement"],
+      "rivalries": ["Robert Tokić", "Ivan Vrdoljak", "Petar Medić"],
+      "relationships": ["Petar Medić is his wedding best man / kum, which makes anti-president interviews funnier"],
+      "tone": "Police/patrol metaphors are welcome: checkpoints, warrants for points, missing-person reports for form, evidence lockers and patrol routes through the bottom half. Treat navlakuša as a recurring doctrine whenever results are poor."
     },
     {
       "name": "Kristian Radoš",
+      "team": "Oranje",
       "titles": 2,
-      "persona": ["two-time champion", "conservative manager", "trusts his squad"],
-      "running_jokes": ["often forgets waivers", "minimal changes", "beat Petar Medić to a title on goal difference with equal points"],
+      "title_seasons": ["2019/20", "2021/22"],
+      "persona": ["two-time champion", "conservative manager", "trusts his squad", "old-school fantasy operator"],
+      "running_jokes": ["often forgets or ignores waivers", "minimal changes", "beat Petar Medić to a title on goal difference with equal points", "gasi internet dok spava", "ancient-phone / strategy-from-2019 jokes", "the problem with mocking him is that he has two titles"],
+      "rivalries": ["Petar Medić", "Robert Tokić"],
       "tone": "Contrast old-school patience with everyone else's transaction addiction. When it works, call it wisdom; when it fails, call it refusal to update the software."
     },
     {
       "name": "Karlo Medić",
+      "team": "FC Hudi",
       "titles": 1,
-      "persona": ["youngest member", "defending champion", "recent first-pick magnet"],
-      "running_jokes": ["before getting first pick, retirement was always on the table", "life is easier with Haaland", "last season's strategy: od govana pita", "nearly every pickup turned into points"],
-      "tone": "Use golden-touch/luck-vs-skill debates, first-pick privilege and Haaland safety-net jokes."
+      "title_seasons": ["2025/26"],
+      "persona": ["youngest member", "defending champion", "recent first-pick magnet", "golden-touch waiver reputation"],
+      "running_jokes": ["before getting first pick, retirement was always on the table", "life is easier with Haaland", "last season's strategy: od govana pita", "nearly every pickup turned into points", "every win without Haaland carrying is evidence for the defence against the Haaland-only allegations"],
+      "rivalries": ["Petar Medić", "Robert Tokić"],
+      "tone": "Use golden-touch/luck-vs-skill debates, first-pick privilege and Haaland safety-net jokes. When other players carry him, explicitly note that the prosecution's Haaland-only case has weakened."
     }
   ]
 }
