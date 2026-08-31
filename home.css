@@ -1,0 +1,56 @@
+/* Home-page-only layout refinements */
+.grid-main > div:nth-child(2) .table-wrap {
+  overflow-x: hidden;
+}
+
+#homeMiniTable {
+  min-width: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#homeMiniTable th,
+#homeMiniTable td {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+#homeMiniTable th:nth-child(1),
+#homeMiniTable td:nth-child(1) {
+  width: 36px;
+}
+
+#homeMiniTable th:nth-child(2),
+#homeMiniTable td:nth-child(2) {
+  width: auto;
+}
+
+#homeMiniTable th:nth-child(3),
+#homeMiniTable td:nth-child(3),
+#homeMiniTable th:nth-child(4),
+#homeMiniTable td:nth-child(4) {
+  width: 68px;
+  text-align: right;
+}
+
+#homeMiniTable .team-name,
+#homeMiniTable .manager-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  #homeMiniTable th,
+  #homeMiniTable td {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: .72rem;
+  }
+  #homeMiniTable th:nth-child(3),
+  #homeMiniTable td:nth-child(3),
+  #homeMiniTable th:nth-child(4),
+  #homeMiniTable td:nth-child(4) {
+    width: 58px;
+  }
+}
