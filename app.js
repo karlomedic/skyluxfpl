@@ -268,13 +268,19 @@ function renderArticles(articles) {
     return;
   }
 
-  els.articlesGrid.innerHTML = articles.slice(0, 6).map(article => `
-    <article class="article-card">
+  els.articlesGrid.innerHTML = articles.slice(0, 6).map(article => {
+    const body = `
       <span class="article-type">${escapeHtml(article.type || 'Redakcija')}</span>
       <h3>${escapeHtml(article.title)}</h3>
       <p>${escapeHtml(article.excerpt || '')}</p>
-      <div class="article-footer"><span>${escapeHtml(article.author || 'SkyLux redakcija')}</span><span>${escapeHtml(article.date || '')}</span></div>
-    </article>`).join('');
+      <div class="article-footer"><span>${escapeHtml(article.author || 'SkyLux redakcija')}</span><span>${escapeHtml(article.date || '')}${article.url ? ' · Otvori ↗' : ''}</span></div>`;
+
+    if (article.url) {
+      return `<a class="article-card" href="${escapeHtml(article.url)}" target="_blank" rel="noopener noreferrer">${body}</a>`;
+    }
+
+    return `<article class="article-card">${body}</article>`;
+  }).join('');
 }
 
 function renderChampions(champions) {
