@@ -3,20 +3,156 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SkyLux FPL</title>
-  <style>
-    body{font-family:Arial,sans-serif;margin:0;background:#111;color:#f5f5f5;display:grid;place-items:center;min-height:100vh}
-    main{max-width:760px;padding:40px 24px;text-align:center}
-    h1{font-size:clamp(2.2rem,7vw,5rem);margin:0 0 12px}
-    p{font-size:1.1rem;line-height:1.6;color:#cfcfcf}
-    .badge{display:inline-block;padding:8px 12px;border:1px solid #555;border-radius:999px;margin-top:16px;color:#ddd}
-  </style>
+  <meta name="theme-color" content="#07130d" />
+  <meta name="description" content="SkyLux FPL Draft liga — live tablica, mini-prvenstva, H2H rezultati i ligaška redakcija." />
+  <title>SkyLux Draft League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <main>
-    <h1>SkyLux FPL</h1>
-    <p>Privatna FPL Draft liga, live tablica, mini-prvenstva, najave kola i sažeci.</p>
-    <div class="badge">League ID: 13174</div>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="SkyLux Draft League početna">
+      <span class="brand-mark">SL</span>
+      <span>
+        <strong>SkyLux</strong>
+        <small>Draft League</small>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Glavna navigacija">
+      <a href="#live">Live</a>
+      <a href="#mini">Mini-prvenstvo</a>
+      <a href="#articles">Redakcija</a>
+      <a href="#history">Povijest</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot"></span> FPL Draft · League 13174</div>
+        <h1>Osam prijatelja.<br><span>Jedna tablica.</span><br>Previše mišljenja.</h1>
+        <p>Live H2H stanje, mini-prvenstva, rezultati kola i službeno neslužbena ligaška redakcija.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#live">Otvori live stanje</a>
+          <a class="button button-ghost" href="#articles">Čitaj redakciju</a>
+        </div>
+      </div>
+      <aside class="status-card" aria-live="polite">
+        <div class="status-top">
+          <span>Trenutno</span>
+          <span id="connectionBadge" class="connection waiting">SPAJANJE</span>
+        </div>
+        <div class="gw-number" id="heroGw">GW —</div>
+        <div class="status-meta">
+          <div><small>Mini blok</small><strong id="heroBlock">—</strong></div>
+          <div><small>Osvježeno</small><strong id="lastUpdated">—</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="live" class="shell section">
+      <div class="section-heading">
+        <div>
+          <span class="kicker">Glavno natjecanje</span>
+          <h2>H2H tablica</h2>
+        </div>
+        <button id="refreshButton" class="refresh-button" type="button">↻ Osvježi</button>
+      </div>
+      <div class="panel table-panel">
+        <div id="standingsLoading" class="loading-state">Dohvaćam tablicu…</div>
+        <div class="table-scroll">
+          <table id="standingsTable" class="league-table" hidden>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ekipa</th>
+                <th>H2H</th>
+                <th>Fantasy bodovi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell section two-col">
+      <div id="mini" class="column-block">
+        <div class="section-heading compact">
+          <div>
+            <span class="kicker">40 € po bloku</span>
+            <h2 id="miniTitle">Mini-prvenstvo</h2>
+          </div>
+          <span id="miniRange" class="pill">GW —</span>
+        </div>
+        <div class="panel table-panel">
+          <div id="miniLoading" class="loading-state">Računam mini-prvenstvo…</div>
+          <div class="table-scroll">
+            <table id="miniTable" class="league-table mini-table" hidden>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Ekipa</th>
+                  <th>Ukupno</th>
+                  <th>Max GW</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="panel-note">Tie-break: veći pojedinačni GW rezultat unutar bloka.</p>
+        </div>
+      </div>
+
+      <div class="column-block">
+        <div class="section-heading compact">
+          <div>
+            <span class="kicker">Ovo kolo</span>
+            <h2 id="matchesTitle">H2H parovi</h2>
+          </div>
+          <span id="matchesStatus" class="pill pill-live">—</span>
+        </div>
+        <div id="matchesPanel" class="match-list panel">
+          <div class="loading-state">Dohvaćam parove…</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="articles" class="shell section">
+      <div class="section-heading">
+        <div>
+          <span class="kicker">SkyLux redakcija</span>
+          <h2>Najave, sažeci i ligaška propaganda</h2>
+        </div>
+      </div>
+      <div id="articlesGrid" class="articles-grid">
+        <article class="article-card skeleton-card"></article>
+        <article class="article-card skeleton-card"></article>
+      </div>
+    </section>
+
+    <section id="history" class="shell section history-section">
+      <div class="section-heading">
+        <div>
+          <span class="kicker">Od 2017/18</span>
+          <h2>Zid prvaka</h2>
+        </div>
+      </div>
+      <div id="championsGrid" class="champions-grid"></div>
+    </section>
   </main>
+
+  <footer class="site-footer shell">
+    <span>SkyLux Draft League</span>
+    <span>Podaci: Fantasy Premier League Draft API · neslužbeni projekt</span>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
 </body>
 </html>
