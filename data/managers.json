@@ -1,0 +1,65 @@
+{
+  "league_id": 13174,
+  "editorial_note": "Profiles are for a private-friends fantasy league site. Use playful, exaggerated sports-column satire. Treat disputed past events as league lore/jokes, not verified allegations. Avoid insults based on nationality, ethnicity, religion or other protected traits.",
+  "managers": [
+    {
+      "name": "Robert Tokić",
+      "titles": 2,
+      "persona": ["self-styled Special One", "serial contender", "loves a narrative"],
+      "running_jokes": ["Tradegate / kumovska era as league lore", "one title sealed by a Liverpool goalkeeper's 90th-minute goal", "Tarik Muharemović = Rolls-Royce"],
+      "rivalries": ["Ivan Vrdoljak", "Jakov Vrdoljak"],
+      "tone": "Roast hard. Call back to the Special One branding, lucky-title mythology and Tradegate lore whenever results allow. Keep Muharemović jokes football/fantasy-based rather than identity-based."
+    },
+    {
+      "name": "Petar Medić",
+      "titles": 1,
+      "persona": ["league president", "always engaged", "permanent trader"],
+      "running_jokes": ["won the inaugural season and has been chasing the next one ever since", "lost a title to Kristian Radoš on goal difference with equal points", "everyone is always available for trade"],
+      "tone": "Use president/front-office metaphors, transfer-market chaos and the eternal search for a second title."
+    },
+    {
+      "name": "Ante Babić",
+      "titles": 0,
+      "persona": ["loudest when roasting others", "commitment is the annual question", "draft-pick grievance specialist"],
+      "running_jokes": ["success means still setting waivers late in the season", "blames fantasy and low draft picks", "maybe the excuses end when he finally gets first pick"],
+      "tone": "Lean into attendance, waiver participation and excuse-tracking. Reward sustained engagement as if it were a trophy."
+    },
+    {
+      "name": "Marko Mihaljević",
+      "titles": 1,
+      "persona": ["newest member", "already a champion", "future personal trainer"],
+      "running_jokes": ["fitness-coach metaphors", "conditioning, reps, bulking and cutting applied to fantasy decisions"],
+      "tone": "Use gym/trainer metaphors often, but keep the football analysis underneath the joke."
+    },
+    {
+      "name": "Ivan Vrdoljak",
+      "titles": 0,
+      "persona": ["one of the Vrdoljak brothers", "historically lower-table", "current-season revival candidate"],
+      "running_jokes": ["would be a yo-yo club if relegation existed", "best squad in years", "Luke Milivojević-era nostalgia", "regular target of Tokić's Muharemović propaganda"],
+      "rivalries": ["Robert Tokić", "Jakov Vrdoljak"],
+      "tone": "Frame good runs as a historic escape from the basement and bad runs as gravity restoring order."
+    },
+    {
+      "name": "Jakov Vrdoljak",
+      "titles": 0,
+      "persona": ["the other Vrdoljak brother", "policeman", "lower-table regular"],
+      "running_jokes": ["patrolling the lower half of the table", "second season waiting for Wirtz", "possible Wirtz family resemblance as a harmless visual gag"],
+      "rivalries": ["Robert Tokić", "Ivan Vrdoljak"],
+      "tone": "Police/patrol metaphors are welcome: checkpoints, warrants for points, missing-person reports for form, patrol routes through the bottom half."
+    },
+    {
+      "name": "Kristian Radoš",
+      "titles": 2,
+      "persona": ["two-time champion", "conservative manager", "trusts his squad"],
+      "running_jokes": ["often forgets waivers", "minimal changes", "beat Petar Medić to a title on goal difference with equal points"],
+      "tone": "Contrast old-school patience with everyone else's transaction addiction. When it works, call it wisdom; when it fails, call it refusal to update the software."
+    },
+    {
+      "name": "Karlo Medić",
+      "titles": 1,
+      "persona": ["youngest member", "defending champion", "recent first-pick magnet"],
+      "running_jokes": ["before getting first pick, retirement was always on the table", "life is easier with Haaland", "last season's strategy: od govana pita", "nearly every pickup turned into points"],
+      "tone": "Use golden-touch/luck-vs-skill debates, first-pick privilege and Haaland safety-net jokes."
+    }
+  ]
+}
