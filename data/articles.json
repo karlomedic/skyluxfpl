@@ -1,6 +1,36 @@
 {
   "articles": [
     {
+      "id": "gw2-preview-2026",
+      "type": "Stari blog · Preview",
+      "title": "GW2 Preview: Waiver tržnica gorjela, favoriti se već crtaju, a Rasulo još uvijek tvrdi da je sve dio plana",
+      "excerpt": "Arhivski tekst sa starog SkyLux WordPress bloga.",
+      "author": "FPL Skylux League",
+      "date": "28.08.2026",
+      "url": "https://fplskylux.wordpress.com/2026/08/28/gw2-preview-waiver-trznica-gorjela-favoriti-se-vec-crtaju-a-rasulo-jos-uvijek-tvrdi-da-je-sve-dio-plana/",
+      "external": true
+    },
+    {
+      "id": "gw1-recap-2026",
+      "type": "Stari blog · Recap",
+      "title": "GW1 Recap: Favoriti odmah pokazali zube, Special One zapeo na startu",
+      "excerpt": "Arhivski tekst sa starog SkyLux WordPress bloga.",
+      "author": "FPL Skylux League",
+      "date": "25.08.2026",
+      "url": "https://fplskylux.wordpress.com/2026/08/25/gw1-recap-favoriti-odmah-pokazali-zube-special-one-zapeo-na-startu/",
+      "external": true
+    },
+    {
+      "id": "welcome-wordpress-2026",
+      "type": "Stari blog · Uvod",
+      "title": "Dobrodošli u FPL Skylux League 2026/27",
+      "excerpt": "Početni tekst i uvod u sezonu 2026/27 sa stare WordPress arhive.",
+      "author": "FPL Skylux League",
+      "date": "24.08.2026",
+      "url": "https://fplskylux.wordpress.com/2026/08/24/dobrodosli-u-fpl-skylux-league-2026-27/",
+      "external": true
+    },
+    {
       "id": "welcome-2026-27",
       "type": "Iz redakcije",
       "title": "Nova sezona, novi portal, isti stari pritisak",
