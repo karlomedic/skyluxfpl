@@ -10,6 +10,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    .shame-construction{min-height:360px;display:grid;place-items:center;padding:42px 24px;text-align:center;background:radial-gradient(circle at 50% 15%,rgba(255,113,106,.08),transparent 24rem),rgba(13,23,16,.86)}
+    .shame-construction-inner{max-width:620px}
+    .shame-construction-icon{width:72px;height:72px;margin:0 auto 20px;border-radius:18px;display:grid;place-items:center;border:1px solid rgba(216,182,91,.28);background:rgba(216,182,91,.08);color:var(--gold);font-size:2rem;font-weight:900;transform:rotate(-4deg)}
+    .shame-construction small{display:block;color:var(--red);font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+    .shame-construction h2{font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-.055em;line-height:1;margin:0 0 14px}
+    .shame-construction p{margin:0;color:#97a69d;line-height:1.65;font-size:.9rem}
+  </style>
 </head>
 <body data-page="shame">
 <header class="site-header">
@@ -21,13 +29,19 @@
   </div>
 </header>
 <main class="container">
-  <section class="page-head"><span class="page-kicker">Arhiva nesreće</span><h1 class="page-title">Hall of Shame.</h1><p class="page-lead">Live statistika aktualne sezone: najniži rezultat, najveći poraz, najduži niz poraza i ostale brojke koje se puno lakše pamte kada se dogode nekome drugome.</p></section>
+  <section class="page-head"><span class="page-kicker">Arhiva nesreće</span><h1 class="page-title">Hall of Shame.</h1><p class="page-lead">Mjesto na kojem će loše odluke, teški porazi i povijesne katastrofe dobiti tretman kakav zaslužuju.</p></section>
   <section class="section">
-    <div id="shameGrid" class="shame-grid"><div class="loading" data-loading>Otvaram stare spise…</div></div>
+    <div class="panel shame-construction">
+      <div class="shame-construction-inner">
+        <div class="shame-construction-icon">⚒</div>
+        <small>Redakcija radi prekovremeno</small>
+        <h2>Radovi u tijeku.</h2>
+        <p>Hall of Shame trenutno je zatvoren zbog rekonstrukcije. Materijala ima dovoljno — samo ga treba pravilno arhivirati, provjeriti i servirati bez mogućnosti žalbe.</p>
+      </div>
+    </div>
   </section>
-  <section class="section"><div class="notice"><strong>O povijesti:</strong> Draft API pouzdano daje detaljne podatke aktualne sezone i postave po odigranim kolima, ali ne nudi stabilan javni endpoint s kompletnom poviješću starih privatnih Draft liga. Zato je Hall of Shame zasad live za 2026/27; stare sezone možemo nadograditi iz vaše arhive i starih podataka.</div></section>
 </main>
-<footer class="footer"><div class="container footer-inner"><span><strong>SkyLux FPL Draft League</strong> · League 13174</span><span>Redakcija: <strong>D. Olivari</strong> · neslužbeni prijateljski projekt</span></div></footer>
+<footer class="footer"><div class="container footer-inner"><span><strong>SkyLux FPL Draft League</strong></span><span>Redakcija: <strong>D. Olivari</strong> · neslužbeni prijateljski projekt</span></div></footer>
 <div id="toast" class="toast" role="status"></div>
 <script src="/core.js" defer></script><script src="/ui.js" defer></script><script src="/app.js" defer></script>
 </body></html>
