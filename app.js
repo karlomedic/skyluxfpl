@@ -6,7 +6,7 @@
   }
 
   const brandStyle=document.createElement('style');
-  brandStyle.textContent='.brand-mark.has-logo{padding:0;background:transparent;box-shadow:none;overflow:hidden}.brand-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:8px}';
+  brandStyle.textContent='.brand-mark.has-logo{width:44px;height:44px;padding:0;background:transparent;box-shadow:none;overflow:visible;border-radius:0}.brand-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))}';
   document.head.appendChild(brandStyle);
 
   function applySkyLuxBrand(){
@@ -22,7 +22,7 @@
       });
     };
     test.onerror=()=>console.warn('SkyLux grb se nije učitao');
-    test.src='/api/site-logo?v=3';
+    test.src='/api/site-logo?v=4';
   }
   applySkyLuxBrand();
 
