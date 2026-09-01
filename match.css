@@ -1,0 +1,162 @@
+/* FPL-inspired match view — isolated from the rest of the dark portal */
+body[data-page="match"] .lineups{align-items:start}
+body[data-page="match"] .squad-panel{
+  background:#f5f7f6;
+  border-color:rgba(8,35,21,.14);
+  color:#102419;
+  box-shadow:0 18px 48px rgba(0,0,0,.22);
+  padding:0;
+  overflow:hidden;
+}
+body[data-page="match"] .squad-head{
+  margin:0;
+  padding:15px 16px;
+  align-items:center;
+  background:#fff;
+  border-bottom:1px solid rgba(10,40,24,.12);
+}
+body[data-page="match"] .squad-head h2{color:#102419;font-size:1.02rem;margin:0}
+body[data-page="match"] .squad-head p{color:#607267;margin:4px 0 0;font-size:.68rem}
+body[data-page="match"] .squad-head .badge{
+  background:#1f8f45;
+  border-color:#1f8f45;
+  color:#fff;
+  font-size:.7rem;
+  padding:7px 10px;
+}
+
+body[data-page="match"] .pitch{
+  position:relative;
+  min-height:500px;
+  margin:14px;
+  padding:22px 10px;
+  border:3px solid rgba(255,255,255,.88);
+  border-radius:10px;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,transparent calc(50% - 1px),rgba(255,255,255,.72) calc(50% - 1px),rgba(255,255,255,.72) calc(50% + 1px),transparent calc(50% + 1px)),
+    repeating-linear-gradient(90deg,#51b968 0 12.5%,#46ad5d 12.5% 25%);
+  box-shadow:inset 0 0 0 1px rgba(15,83,38,.24);
+}
+body[data-page="match"] .pitch::before{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:104px;height:104px;
+  transform:translate(-50%,-50%);
+  border:2px solid rgba(255,255,255,.72);
+  border-radius:50%;
+  pointer-events:none;
+}
+body[data-page="match"] .pitch::after{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:6px;height:6px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:rgba(255,255,255,.82);
+  pointer-events:none;
+}
+body[data-page="match"] .pitch-row{
+  position:relative;
+  z-index:2;
+  gap:8px;
+  flex-wrap:nowrap;
+  align-items:flex-start;
+}
+
+body[data-page="match"] .player-chip{
+  position:relative;
+  min-width:74px;
+  max-width:94px;
+  padding:48px 4px 0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#102419;
+  text-align:center;
+  box-shadow:none;
+}
+body[data-page="match"] .player-chip::before{
+  content:"";
+  position:absolute;
+  left:50%;top:0;
+  width:44px;height:42px;
+  transform:translateX(-50%);
+  clip-path:polygon(22% 0,38% 8%,62% 8%,78% 0,100% 18%,86% 36%,79% 28%,79% 100%,21% 100%,21% 28%,14% 36%,0 18%);
+  background:linear-gradient(145deg,#6a1bff,#3d067b);
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.2));
+}
+body[data-page="match"] .pitch-row:first-child .player-chip::before{
+  background:linear-gradient(145deg,#ffd948,#f4a900);
+}
+body[data-page="match"] .player-chip strong{
+  display:block;
+  width:100%;
+  padding:5px 4px 4px;
+  border-radius:5px 5px 0 0;
+  background:#fff;
+  color:#122219;
+  font-size:.64rem;
+  font-weight:800;
+  line-height:1.15;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  box-shadow:0 2px 6px rgba(0,0,0,.16);
+}
+body[data-page="match"] .player-chip span{
+  display:block;
+  margin:0;
+  padding:4px;
+  border-radius:0 0 5px 5px;
+  background:#18251d;
+  color:#fff;
+  font-size:.66rem;
+  font-weight:900;
+  box-shadow:0 2px 6px rgba(0,0,0,.16);
+}
+
+body[data-page="match"] .bench{
+  margin:0;
+  padding:12px 14px 15px;
+  background:#e9eeeb;
+  border-top:1px solid rgba(10,40,24,.12);
+}
+body[data-page="match"] .bench-title{
+  color:#52665a;
+  font-weight:900;
+  font-size:.62rem;
+  letter-spacing:.12em;
+  margin:0 0 9px;
+}
+body[data-page="match"] .bench-grid{gap:8px}
+body[data-page="match"] .bench .player-chip{
+  min-width:0;
+  max-width:none;
+  padding:42px 2px 0;
+}
+body[data-page="match"] .bench .player-chip::before{width:39px;height:37px;background:linear-gradient(145deg,#65736a,#35443b)}
+body[data-page="match"] .bench .player-chip strong{font-size:.6rem}
+body[data-page="match"] .bench .player-chip span{font-size:.62rem}
+
+@media(max-width:760px){
+  body[data-page="match"] .squad-panel{border-radius:14px}
+  body[data-page="match"] .pitch{min-height:440px;margin:10px;padding:18px 5px}
+  body[data-page="match"] .pitch-row{gap:2px}
+  body[data-page="match"] .player-chip{min-width:58px;max-width:76px;padding-top:43px}
+  body[data-page="match"] .player-chip::before{width:39px;height:37px}
+  body[data-page="match"] .player-chip strong{font-size:.56rem;padding-inline:2px}
+  body[data-page="match"] .player-chip span{font-size:.59rem}
+  body[data-page="match"] .bench-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  body[data-page="match"] .bench .player-chip{padding-top:38px}
+  body[data-page="match"] .bench .player-chip::before{width:35px;height:33px}
+}
+
+@media(max-width:390px){
+  body[data-page="match"] .pitch{margin:8px 6px;padding-inline:2px}
+  body[data-page="match"] .player-chip{min-width:52px;max-width:68px}
+  body[data-page="match"] .player-chip strong{font-size:.52rem}
+  body[data-page="match"] .player-chip span{font-size:.56rem}
+}
