@@ -1,0 +1,70 @@
+@media(max-width:760px){
+  html,body{max-width:100%;overflow-x:hidden}
+  main{min-width:0}
+  .container{max-width:100%;width:calc(100% - 16px)}
+  .grid-main{display:block}
+  .grid-main>div+div{margin-top:22px}
+  .table-wrap{max-width:100%}
+
+  #homeLeagueTable,#homeMiniTable{min-width:0!important;width:100%;table-layout:fixed}
+  #homeLeagueTable th,#homeLeagueTable td,#homeMiniTable th,#homeMiniTable td{padding:9px 5px;font-size:.68rem}
+  #homeLeagueTable th:first-child,#homeLeagueTable td:first-child,#homeMiniTable th:first-child,#homeMiniTable td:first-child{width:28px}
+  #homeLeagueTable th:nth-child(2),#homeLeagueTable td:nth-child(2){width:45%}
+  #homeLeagueTable th:nth-child(3),#homeLeagueTable td:nth-child(3){width:25%}
+  #homeLeagueTable th:nth-child(4),#homeLeagueTable td:nth-child(4){width:25%}
+  #homeLeagueTable .manager-name,#homeMiniTable .manager-name{display:none}
+  #homeLeagueTable .team-name,#homeMiniTable .team-name{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .home-hero h1{font-size:clamp(2.35rem,12vw,3.3rem);line-height:.94}
+  .home-hero p{font-size:.84rem}
+  .hero-status-gw{font-size:3.6rem}
+  .section-head{width:100%}
+
+  .match-card{min-width:0}
+  .match-team{min-width:0}
+  .match-team strong{white-space:normal;overflow-wrap:anywhere}
+
+  .news-grid{grid-template-columns:1fr}
+  .news-card{min-height:0}
+
+  .fixture-grid{grid-template-columns:1fr}
+  .fixture-card{min-width:0}
+
+  .lineups{grid-template-columns:1fr}
+  .pitch{min-height:320px}
+  .pitch-row{gap:5px}
+  .player-chip{min-width:60px;max-width:84px}
+
+  .hof-grid{grid-template-columns:1fr}
+  .hof-photo{max-height:none}
+}
+
+@media(max-width:460px){
+  .header-inner{min-height:60px}
+  .brand-copy strong{font-size:.86rem}
+  .brand-mark{width:32px;height:32px}
+  .nav{top:60px}
+  .home-hero{padding-top:22px}
+  .home-hero h1{font-size:2.35rem}
+  .page-kicker{font-size:.61rem}
+  .hero-status{padding:14px}
+  .hero-status-gw{font-size:3.2rem;margin:14px 0}
+  .hero-status-meta{grid-template-columns:1fr}
+
+  #homeLeagueTable th,#homeLeagueTable td,#homeMiniTable th,#homeMiniTable td{padding:8px 4px;font-size:.63rem}
+  #homeLeagueTable th:nth-child(2),#homeLeagueTable td:nth-child(2){width:43%}
+  #homeMiniTable th:nth-child(3),#homeMiniTable td:nth-child(3),#homeMiniTable th:nth-child(4),#homeMiniTable td:nth-child(4){width:54px}
+
+  .match-card{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);padding:11px 8px}
+  .match-team small{display:none}
+  .match-score{font-size:.92rem}
+
+  .match-hero{grid-template-columns:1fr;gap:8px}
+  .match-hero-score{font-size:2.45rem}
+  .squad-head h2{font-size:.92rem}
+  .bench-grid{grid-template-columns:1fr 1fr}
+
+  .fixture-row{grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr)}
+  .fixture-team small{display:none}
+  .fixture-meta span:last-child{display:none}
+}
