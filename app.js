@@ -9,33 +9,20 @@
   brandStyle.textContent='.brand-mark.has-logo{padding:0;background:transparent;box-shadow:none;overflow:hidden}.brand-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:8px}';
   document.head.appendChild(brandStyle);
 
-  function brandImageUrl(node){
-    if(typeof node==='string'&&/^https?:\/\//i.test(node))return node;
-    if(Array.isArray(node)){
-      for(let i=node.length-1;i>=0;i--){const found=brandImageUrl(node[i]);if(found)return found}
-      return'';
-    }
-    if(node&&typeof node==='object'){
-      for(const key of ['img','url','URL','src']){
-        const v=node[key];if(typeof v==='string'&&/^https?:\/\//i.test(v))return v;
-      }
-      for(const v of Object.values(node)){const found=brandImageUrl(v);if(found)return found}
-    }
-    return'';
-  }
-
-  async function applySkyLuxBrand(){
-    try{
-      const r=await fetch('/api/site-brand',{cache:'no-store',headers:{Accept:'application/json'}});
-      if(!r.ok)return;
-      const site=await r.json();
-      const src=brandImageUrl(site.icon)||brandImageUrl(site.site_icon)||brandImageUrl(site.logo);
-      if(!src)return;
+  function applySkyLuxBrand(){
+    const test=new Image();
+    test.alt='SkyLux grb';
+    test.onload=()=>{
       document.querySelectorAll('.brand-mark').forEach(mark=>{
+        const img=document.createElement('img');
+        img.src=test.src;
+        img.alt='SkyLux grb';
         mark.classList.add('has-logo');
-        mark.innerHTML=`<img src="${src.replaceAll('&','&amp;').replaceAll('"','&quot;')}" alt="SkyLux grb">`;
+        mark.replaceChildren(img);
       });
-    }catch(e){console.warn('SkyLux logo nije dohvaćen',e)}
+    };
+    test.onerror=()=>console.warn('SkyLux grb se nije učitao');
+    test.src='/api/site-logo?v=3';
   }
   applySkyLuxBrand();
 
