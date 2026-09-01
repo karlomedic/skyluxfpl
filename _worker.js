@@ -66,44 +66,110 @@ function attr(tag,name){
   return m?m[1]:'';
 }
 
-async function wordpressLogo(ttl = 86400) {
-  let target = new URL('favicon.ico', WORDPRESS_HOME).toString();
-  try {
-    const page = await fetch(WORDPRESS_HOME, {
-      headers: {
-        Accept: 'text/html,application/xhtml+xml',
-        'User-Agent': 'SkyLux-FPL/WordPress-Brand'
-      }
-    });
-    if (page.ok) {
-      const html = await page.text();
-      const tags = html.match(/<link\b[^>]*>/gi) || [];
-      const icons = tags.map(tag=>{
-        const rel=attr(tag,'rel').toLowerCase();
-        const href=attr(tag,'href');
-        const sizes=attr(tag,'sizes');
-        if(!href || !(rel.includes('icon') || rel.includes('apple-touch-icon')))return null;
-        let score=rel.includes('apple-touch-icon')?100:50;
-        const n=parseInt((sizes.match(/(\d+)x\d+/)||[])[1]||'0',10);
-        score+=Number.isFinite(n)?n:0;
-        return{href,score};
-      }).filter(Boolean).sort((a,b)=>b.score-a.score);
-      if(icons.length)target=new URL(icons[0].href,WORDPRESS_HOME).toString();
-    }
-  } catch(e) {
-    console.warn('WordPress crest discovery failed',e);
-  }
+function decodeUrl(value=''){
+  return String(value)
+    .replaceAll('&amp;','&')
+    .replaceAll('&#038;','&')
+    .replaceAll('&#38;','&')
+    .trim();
+}
 
-  let upstream = await fetch(target, {headers:{'User-Agent':'SkyLux-FPL/WordPress-Brand'}});
-  if(!upstream.ok && target!==new URL('favicon.ico',WORDPRESS_HOME).toString()){
-    upstream=await fetch(new URL('favicon.ico',WORDPRESS_HOME).toString(),{headers:{'User-Agent':'SkyLux-FPL/WordPress-Brand'}});
+function logoScore({src='',cls='',alt='',title=''}){
+  const s=`${src} ${cls} ${alt} ${title}`.toLowerCase();
+  let score=0;
+  if(/custom-logo/.test(cls.toLowerCase())) score+=1000;
+  if(/wp-block-site-logo|site-logo/.test(cls.toLowerCase())) score+=900;
+  if(/skylux/.test(alt.toLowerCase())) score+=500;
+  if(/skylux/.test(title.toLowerCase())) score+=450;
+  if(/skylux/.test(src.toLowerCase())) score+=280;
+  if(/\b(grb|crest|logo)\b/.test(s)) score+=220;
+  if(/header|branding|identity/.test(s)) score+=120;
+  if(/avatar|gravatar|emoji|wordpress-logo|wp-logo/.test(s)) score-=900;
+  return score;
+}
+
+function logoFromHomepage(html){
+  const imgs=html.match(/<img\b[^>]*>/gi)||[];
+  const ranked=imgs.map(tag=>{
+    const src=decodeUrl(attr(tag,'src')||attr(tag,'data-src'));
+    if(!src)return null;
+    const cls=attr(tag,'class');
+    const alt=attr(tag,'alt');
+    const title=attr(tag,'title');
+    return{src,score:logoScore({src,cls,alt,title})};
+  }).filter(Boolean).sort((a,b)=>b.score-a.score);
+  return ranked[0]?.score>=200?ranked[0].src:'';
+}
+
+function logoFromMedia(items){
+  const ranked=(Array.isArray(items)?items:[]).map(item=>{
+    const src=decodeUrl(item?.source_url||'');
+    const title=item?.title?.rendered||'';
+    const alt=item?.alt_text||'';
+    const caption=item?.caption?.rendered||'';
+    return{src,score:logoScore({src,cls:'media-library',alt,title:`${title} ${caption}`})};
+  }).filter(x=>x.src).sort((a,b)=>b.score-a.score);
+  return ranked[0]?.score>=220?ranked[0].src:'';
+}
+
+function iconFromHomepage(html){
+  const tags=html.match(/<link\b[^>]*>/gi)||[];
+  const icons=tags.map(tag=>{
+    const rel=attr(tag,'rel').toLowerCase();
+    const href=decodeUrl(attr(tag,'href'));
+    const sizes=attr(tag,'sizes');
+    if(!href||!(rel.includes('icon')||rel.includes('apple-touch-icon')))return null;
+    let score=rel.includes('apple-touch-icon')?100:50;
+    const n=parseInt((sizes.match(/(\d+)x\d+/)||[])[1]||'0',10);
+    score+=Number.isFinite(n)?n:0;
+    return{href,score};
+  }).filter(Boolean).sort((a,b)=>b.score-a.score);
+  return icons[0]?.href||'';
+}
+
+async function discoverWordpressLogo(){
+  let html='';
+  try{
+    const page=await fetch(WORDPRESS_HOME,{
+      headers:{Accept:'text/html,application/xhtml+xml','User-Agent':'SkyLux-FPL/WordPress-Brand'}
+    });
+    if(page.ok)html=await page.text();
+  }catch(e){console.warn('WordPress homepage logo discovery failed',e)}
+
+  const headerLogo=logoFromHomepage(html);
+  if(headerLogo)return new URL(headerLogo,WORDPRESS_HOME).toString();
+
+  try{
+    const queries=['skylux','logo','grb'];
+    const results=await Promise.all(queries.map(async q=>{
+      const r=await fetch(`${WORDPRESS_BASE}/media?search=${encodeURIComponent(q)}&per_page=20&_fields=source_url,title,caption,alt_text`,{
+        headers:{Accept:'application/json','User-Agent':'SkyLux-FPL/WordPress-Brand'}
+      });
+      return r.ok?await r.json():[];
+    }));
+    const mediaLogo=logoFromMedia(results.flat());
+    if(mediaLogo)return mediaLogo;
+  }catch(e){console.warn('WordPress media logo discovery failed',e)}
+
+  const icon=iconFromHomepage(html);
+  if(icon)return new URL(icon,WORDPRESS_HOME).toString();
+  return new URL('favicon.ico',WORDPRESS_HOME).toString();
+}
+
+async function wordpressLogo(ttl = 86400) {
+  const target=await discoverWordpressLogo();
+  let upstream=await fetch(target,{headers:{'User-Agent':'SkyLux-FPL/WordPress-Brand'}});
+  const type=(upstream.headers.get('content-type')||'').toLowerCase();
+  if(!upstream.ok||!type.startsWith('image/')){
+    const fallback=new URL('favicon.ico',WORDPRESS_HOME).toString();
+    upstream=await fetch(fallback,{headers:{'User-Agent':'SkyLux-FPL/WordPress-Brand'}});
   }
   const body=await upstream.arrayBuffer();
   const headers=new Headers();
   headers.set('Content-Type',upstream.headers.get('content-type')||'image/png');
   headers.set('Cache-Control',`public, max-age=${ttl}, s-maxage=${ttl}`);
   headers.set('Access-Control-Allow-Origin','*');
-  headers.set('X-SkyLux-Source','WordPress.com Crest');
+  headers.set('X-SkyLux-Source','WordPress.com Header Logo');
   return new Response(body,{status:upstream.status,statusText:upstream.statusText,headers});
 }
 
@@ -116,7 +182,6 @@ export default {
     if (url.pathname === '/api/element-status') return proxy(`/api/league/${LEAGUE_ID}/element-status`, 20);
     if (url.pathname === '/api/transactions') return proxy(`/api/draft/league/${LEAGUE_ID}/transactions`, 30);
 
-    // WordPress.com is the editorial CMS. Public posts and branding require no auth.
     if (url.pathname === '/api/site-brand') return wordpressSite(3600);
     if (url.pathname === '/api/site-logo') return wordpressLogo(86400);
     if (url.pathname === '/api/articles') {
@@ -127,7 +192,6 @@ export default {
       return wordpress(`/posts/${article[1]}?_fields=id,date,modified,slug,title,excerpt,content,link`, 60);
     }
 
-    // Draft's event/live endpoint is the authoritative live player-point feed for this site.
     const live = url.pathname.match(/^\/api\/live\/(\d+)$/);
     if (live) return proxy(`/api/event/${live[1]}/live`, 8);
 
