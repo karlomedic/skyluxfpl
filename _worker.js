@@ -42,7 +42,7 @@ async function wordpress(path, ttl = 60) {
 }
 
 async function wordpressSite(ttl = 3600) {
-  const upstream = await fetch(`${WORDPRESS_SITE}?fields=name,URL,icon,logo`, {
+  const upstream = await fetch(WORDPRESS_SITE, {
     headers: {
       Accept: 'application/json',
       'User-Agent': 'SkyLux-FPL/WordPress-Brand'
