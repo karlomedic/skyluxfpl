@@ -37,7 +37,7 @@
   #leagueTable th:nth-child(4),#leagueTable td:nth-child(4){width:8%}
   #leagueTable th:nth-child(5),#leagueTable td:nth-child(5){display:table-cell!important;width:8%}
   #leagueTable th:nth-child(5){font-size:0}
-  #leagueTable th:nth-child(5)::after{content:'X';font-size:.52rem}
+  #leagueTable th:nth-child(5)::after{content:'D';font-size:.52rem}
   #leagueTable th:nth-child(6),#leagueTable td:nth-child(6){width:8%}
   #leagueTable th:nth-child(7),#leagueTable td:nth-child(7){width:20%}
   #leagueTable th:nth-child(8),#leagueTable td:nth-child(8){width:16%}
