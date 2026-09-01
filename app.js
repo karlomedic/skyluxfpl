@@ -6,23 +6,18 @@
   }
 
   const brandStyle=document.createElement('style');
-  brandStyle.textContent='.brand-mark.has-logo{width:44px;height:44px;padding:0;background:transparent;box-shadow:none;overflow:visible;border-radius:0}.brand-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))}';
+  brandStyle.textContent='.brand-mark.has-logo{width:48px;height:44px;padding:0;background:transparent;box-shadow:none;overflow:visible;border-radius:0}.brand-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))}';
   document.head.appendChild(brandStyle);
 
   function applySkyLuxBrand(){
-    const test=new Image();
-    test.alt='SkyLux grb';
-    test.onload=()=>{
-      document.querySelectorAll('.brand-mark').forEach(mark=>{
-        const img=document.createElement('img');
-        img.src=test.src;
-        img.alt='SkyLux grb';
-        mark.classList.add('has-logo');
-        mark.replaceChildren(img);
-      });
-    };
-    test.onerror=()=>console.warn('SkyLux grb se nije učitao');
-    test.src='/api/site-logo?v=4';
+    document.querySelectorAll('.brand-mark').forEach(mark=>{
+      const img=document.createElement('img');
+      img.src='/assets/skylux-crest.svg?v=1';
+      img.alt='SkyLux Fantasy League grb';
+      img.loading='eager';
+      mark.classList.add('has-logo');
+      mark.replaceChildren(img);
+    });
   }
   applySkyLuxBrand();
 
