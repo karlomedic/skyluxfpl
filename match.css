@@ -67,10 +67,9 @@ body[data-page="match"] .pitch-row{
 }
 
 body[data-page="match"] .player-chip{
-  position:relative;
   min-width:74px;
   max-width:94px;
-  padding:48px 4px 0;
+  padding:0 4px;
   border:0;
   border-radius:0;
   background:transparent;
@@ -78,19 +77,30 @@ body[data-page="match"] .player-chip{
   text-align:center;
   box-shadow:none;
 }
-body[data-page="match"] .player-chip::before{
+body[data-page="match"] .player-shirt{
+  height:48px;
+  display:grid;
+  place-items:end center;
+  margin-bottom:1px;
+}
+body[data-page="match"] .player-shirt img{
+  display:block;
+  width:auto;
+  height:46px;
+  max-width:62px;
+  object-fit:contain;
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.2));
+}
+body[data-page="match"] .player-shirt.is-fallback::before{
   content:"";
-  position:absolute;
-  left:50%;top:0;
-  width:44px;height:42px;
-  transform:translateX(-50%);
+  display:block;
+  width:44px;
+  height:42px;
   clip-path:polygon(22% 0,38% 8%,62% 8%,78% 0,100% 18%,86% 36%,79% 28%,79% 100%,21% 100%,21% 28%,14% 36%,0 18%);
   background:linear-gradient(145deg,#6a1bff,#3d067b);
   filter:drop-shadow(0 3px 2px rgba(0,0,0,.2));
 }
-body[data-page="match"] .pitch-row:first-child .player-chip::before{
-  background:linear-gradient(145deg,#ffd948,#f4a900);
-}
+body[data-page="match"] .player-chip.gk .player-shirt.is-fallback::before{background:linear-gradient(145deg,#ffd948,#f4a900)}
 body[data-page="match"] .player-chip strong{
   display:block;
   width:100%;
@@ -132,12 +142,11 @@ body[data-page="match"] .bench-title{
   margin:0 0 9px;
 }
 body[data-page="match"] .bench-grid{gap:8px}
-body[data-page="match"] .bench .player-chip{
-  min-width:0;
-  max-width:none;
-  padding:42px 2px 0;
-}
-body[data-page="match"] .bench .player-chip::before{width:39px;height:37px;background:linear-gradient(145deg,#65736a,#35443b)}
+body[data-page="match"] .bench .player-chip{min-width:0;max-width:none;padding-inline:2px}
+body[data-page="match"] .bench .player-shirt{height:42px}
+body[data-page="match"] .bench .player-shirt img{height:40px;max-width:54px}
+body[data-page="match"] .bench .player-shirt.is-fallback::before{width:39px;height:37px;background:linear-gradient(145deg,#65736a,#35443b)}
+body[data-page="match"] .bench .player-chip.gk .player-shirt.is-fallback::before{background:linear-gradient(145deg,#ffd948,#f4a900)}
 body[data-page="match"] .bench .player-chip strong{font-size:.6rem}
 body[data-page="match"] .bench .player-chip span{font-size:.62rem}
 
@@ -145,13 +154,16 @@ body[data-page="match"] .bench .player-chip span{font-size:.62rem}
   body[data-page="match"] .squad-panel{border-radius:14px}
   body[data-page="match"] .pitch{min-height:440px;margin:10px;padding:18px 5px}
   body[data-page="match"] .pitch-row{gap:2px}
-  body[data-page="match"] .player-chip{min-width:58px;max-width:76px;padding-top:43px}
-  body[data-page="match"] .player-chip::before{width:39px;height:37px}
+  body[data-page="match"] .player-chip{min-width:58px;max-width:76px;padding-inline:2px}
+  body[data-page="match"] .player-shirt{height:43px}
+  body[data-page="match"] .player-shirt img{height:41px;max-width:54px}
+  body[data-page="match"] .player-shirt.is-fallback::before{width:39px;height:37px}
   body[data-page="match"] .player-chip strong{font-size:.56rem;padding-inline:2px}
   body[data-page="match"] .player-chip span{font-size:.59rem}
   body[data-page="match"] .bench-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  body[data-page="match"] .bench .player-chip{padding-top:38px}
-  body[data-page="match"] .bench .player-chip::before{width:35px;height:33px}
+  body[data-page="match"] .bench .player-shirt{height:38px}
+  body[data-page="match"] .bench .player-shirt img{height:36px;max-width:48px}
+  body[data-page="match"] .bench .player-shirt.is-fallback::before{width:35px;height:33px}
 }
 
 @media(max-width:390px){
