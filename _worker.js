@@ -1,5 +1,5 @@
 const DRAFT_BASE = 'https://draft.premierleague.com';
-const WORDPRESS_BASE = 'https://fplskylux.wordpress.com/wp-json/wp/v2';
+const WORDPRESS_BASE = 'https://public-api.wordpress.com/wp/v2/sites/fplskylux.wordpress.com';
 const LEAGUE_ID = 13174;
 
 async function proxy(path, ttl = 20) {
@@ -32,7 +32,7 @@ async function wordpress(path, ttl = 60) {
   const headers = new Headers(upstream.headers);
   headers.set('Cache-Control', `public, max-age=${ttl}, s-maxage=${ttl}`);
   headers.set('Access-Control-Allow-Origin', '*');
-  headers.set('X-SkyLux-Source', 'WordPress');
+  headers.set('X-SkyLux-Source', 'WordPress.com');
   return new Response(body, {
     status: upstream.status,
     statusText: upstream.statusText,
@@ -49,7 +49,7 @@ export default {
     if (url.pathname === '/api/element-status') return proxy(`/api/league/${LEAGUE_ID}/element-status`, 20);
     if (url.pathname === '/api/transactions') return proxy(`/api/draft/league/${LEAGUE_ID}/transactions`, 30);
 
-    // WordPress is the editorial CMS. New published posts appear on SkyLux automatically.
+    // WordPress.com is the editorial CMS. Public posts require no auth.
     if (url.pathname === '/api/articles') {
       return wordpress('/posts?per_page=30&orderby=date&order=desc&_fields=id,date,modified,slug,title,excerpt,link', 60);
     }
