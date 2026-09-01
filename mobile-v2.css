@@ -10,30 +10,43 @@
   .panel{width:100%;max-width:100%;overflow:hidden}
   .table-wrap{width:100%;max-width:100%;overflow-x:hidden}
 
+  /* Sve tablice: brojke kompaktne i vizualno poravnate. */
+  .data-table{min-width:0!important;width:100%;max-width:100%;table-layout:fixed}
+  .data-table th,.data-table td{vertical-align:middle}
+  .data-table .num{text-align:center;white-space:nowrap}
+
   /* Početna: kompaktnije tablice, bez prazne širine desno. */
   #homeLeagueTable,#homeMiniTable{min-width:0!important;width:100%;max-width:100%;table-layout:fixed}
   #homeLeagueTable th,#homeLeagueTable td,#homeMiniTable th,#homeMiniTable td{padding:9px 4px;font-size:.67rem}
   #homeLeagueTable th:first-child,#homeLeagueTable td:first-child,#homeMiniTable th:first-child,#homeMiniTable td:first-child{width:26px}
-  #homeLeagueTable th:nth-child(2),#homeLeagueTable td:nth-child(2){width:37%}
-  #homeLeagueTable th:nth-child(3),#homeLeagueTable td:nth-child(3){width:29%}
-  #homeLeagueTable th:nth-child(4),#homeLeagueTable td:nth-child(4){width:29%}
-  #homeMiniTable th:nth-child(2),#homeMiniTable td:nth-child(2){width:43%}
-  #homeMiniTable th:nth-child(3),#homeMiniTable td:nth-child(3),#homeMiniTable th:nth-child(4),#homeMiniTable td:nth-child(4){width:27%}
+  #homeLeagueTable th:nth-child(2),#homeLeagueTable td:nth-child(2){width:35%}
+  #homeLeagueTable th:nth-child(3),#homeLeagueTable td:nth-child(3){width:31%}
+  #homeLeagueTable th:nth-child(4),#homeLeagueTable td:nth-child(4){width:31%}
+  #homeMiniTable th:nth-child(2),#homeMiniTable td:nth-child(2){width:41%}
+  #homeMiniTable th:nth-child(3),#homeMiniTable td:nth-child(3),#homeMiniTable th:nth-child(4),#homeMiniTable td:nth-child(4){width:28%}
   #homeLeagueTable .manager-name,#homeMiniTable .manager-name{display:none}
   #homeLeagueTable .team-name,#homeMiniTable .team-name{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #homeLeagueTable th,#homeMiniTable th{white-space:normal;line-height:1.15}
 
-  /* H2H stranica: H2H bodovi i PF imaju svoja polja i ne preklapaju se. */
+  /* H2H stranica: svi vidljivi stupci dio su istog kompaktnog grida. */
   #leagueTable{min-width:0!important;width:100%;table-layout:fixed}
-  #leagueTable th,#leagueTable td{padding:9px 4px;font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #leagueTable th{font-size:.56rem;white-space:normal;line-height:1.05;overflow:visible;text-overflow:clip}
-  #leagueTable th:nth-child(1),#leagueTable td:nth-child(1){width:25px}
-  #leagueTable th:nth-child(2),#leagueTable td:nth-child(2){width:34%}
-  #leagueTable th:nth-child(4),#leagueTable td:nth-child(4){width:9%;text-align:center}
-  #leagueTable th:nth-child(6),#leagueTable td:nth-child(6){width:9%;text-align:center}
-  #leagueTable th:nth-child(7),#leagueTable td:nth-child(7){width:20%;text-align:center}
-  #leagueTable th:nth-child(8),#leagueTable td:nth-child(8){width:18%;text-align:right}
+  #leagueTable th,#leagueTable td{padding:8px 3px;font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+  #leagueTable th{font-size:.52rem;white-space:normal;line-height:1.05;overflow:visible;text-overflow:clip}
+  #leagueTable th:nth-child(1),#leagueTable td:nth-child(1){width:24px}
+  #leagueTable th:nth-child(2),#leagueTable td:nth-child(2){width:31%;text-align:left}
+  #leagueTable th:nth-child(4),#leagueTable td:nth-child(4){width:9%}
+  #leagueTable th:nth-child(6),#leagueTable td:nth-child(6){width:9%}
+  #leagueTable th:nth-child(7),#leagueTable td:nth-child(7){width:21%}
+  #leagueTable th:nth-child(8),#leagueTable td:nth-child(8){width:17%}
   #leagueTable .manager-name{display:none}
+
+  /* Mini stranica: isti ritam i bez izoliranih brojčanih stupaca. */
+  #miniPageTable{min-width:0!important;width:100%;table-layout:fixed}
+  #miniPageTable th,#miniPageTable td{padding:8px 4px;font-size:.65rem}
+  #miniPageTable th:first-child,#miniPageTable td:first-child{width:26px}
+  #miniPageTable th:nth-child(2),#miniPageTable td:nth-child(2){width:43%}
+  #miniPageTable th:nth-child(4),#miniPageTable td:nth-child(4),#miniPageTable th:nth-child(5),#miniPageTable td:nth-child(5){width:24%;text-align:center}
+  #miniPageTable .manager-name{display:none}
 
   .home-hero h1{font-size:clamp(2.35rem,12vw,3.3rem);line-height:.94}
   .home-hero p{font-size:.84rem}
@@ -44,12 +57,15 @@
   .match-card{min-width:0;width:100%}
   .match-team{min-width:0}
   .match-team strong{white-space:normal;overflow-wrap:anywhere}
+  .match-score{white-space:nowrap;word-break:keep-all}
 
   .news-grid{grid-template-columns:1fr;width:100%}
   .news-card{min-width:0;min-height:0}
 
   .fixture-grid{grid-template-columns:1fr;width:100%}
   .fixture-card{min-width:0}
+  .fixture-row{grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr);gap:8px}
+  .fixture-score{white-space:nowrap;word-break:keep-all;overflow:visible;font-size:1rem;line-height:1;text-align:center}
 
   .lineups{grid-template-columns:1fr;width:100%}
   .pitch{min-height:320px;max-width:100%}
@@ -73,25 +89,26 @@
   .hero-status-meta{grid-template-columns:1fr}
 
   #homeLeagueTable th,#homeLeagueTable td,#homeMiniTable th,#homeMiniTable td{padding:8px 3px;font-size:.61rem}
-  #homeLeagueTable th:nth-child(2),#homeLeagueTable td:nth-child(2){width:35%}
-  #homeMiniTable th:nth-child(2),#homeMiniTable td:nth-child(2){width:41%}
+  #homeLeagueTable th:nth-child(2),#homeLeagueTable td:nth-child(2){width:33%}
+  #homeMiniTable th:nth-child(2),#homeMiniTable td:nth-child(2){width:39%}
 
-  #leagueTable th,#leagueTable td{padding:8px 3px;font-size:.61rem}
-  #leagueTable th{font-size:.52rem}
-  #leagueTable th:nth-child(2),#leagueTable td:nth-child(2){width:32%}
+  #leagueTable th,#leagueTable td{padding:8px 2px;font-size:.59rem}
+  #leagueTable th{font-size:.49rem}
+  #leagueTable th:nth-child(2),#leagueTable td:nth-child(2){width:29%}
   #leagueTable th:nth-child(7),#leagueTable td:nth-child(7){width:22%}
   #leagueTable th:nth-child(8),#leagueTable td:nth-child(8){width:18%}
 
-  .match-card{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);padding:11px 8px}
+  .match-card{grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);padding:11px 8px}
   .match-team small{display:none}
-  .match-score{font-size:.92rem}
+  .match-score{font-size:.9rem}
 
   .match-hero{grid-template-columns:1fr;gap:8px}
-  .match-hero-score{font-size:2.45rem}
+  .match-hero-score{font-size:2.45rem;white-space:nowrap}
   .squad-head h2{font-size:.92rem}
   .bench-grid{grid-template-columns:1fr 1fr}
 
-  .fixture-row{grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr)}
+  .fixture-row{grid-template-columns:minmax(0,1fr) 68px minmax(0,1fr);gap:6px}
   .fixture-team small{display:none}
   .fixture-meta span:last-child{display:none}
+  .fixture-score{font-size:.92rem;white-space:nowrap}
 }
