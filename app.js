@@ -29,11 +29,11 @@
       const r=await fetch('/api/site-brand',{cache:'no-store',headers:{Accept:'application/json'}});
       if(!r.ok)return;
       const site=await r.json();
-      const src=brandImageUrl(site.logo)||brandImageUrl(site.icon);
+      const src=brandImageUrl(site.icon)||brandImageUrl(site.site_icon)||brandImageUrl(site.logo);
       if(!src)return;
       document.querySelectorAll('.brand-mark').forEach(mark=>{
         mark.classList.add('has-logo');
-        mark.innerHTML=`<img src="${src.replaceAll('&','&amp;').replaceAll('"','&quot;')}" alt="SkyLux">`;
+        mark.innerHTML=`<img src="${src.replaceAll('&','&amp;').replaceAll('"','&quot;')}" alt="SkyLux grb">`;
       });
     }catch(e){console.warn('SkyLux logo nije dohvaćen',e)}
   }
