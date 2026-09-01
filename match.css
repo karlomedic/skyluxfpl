@@ -25,37 +25,46 @@ body[data-page="match"] .squad-head .badge{
   padding:7px 10px;
 }
 
+/* Jedna polovica terena: gol je gore, linija centra dolje. */
 body[data-page="match"] .pitch{
   position:relative;
-  min-height:500px;
+  min-height:455px;
   margin:14px;
-  padding:22px 10px;
-  border:3px solid rgba(255,255,255,.88);
+  padding:36px 10px 20px;
+  border:3px solid rgba(255,255,255,.9);
   border-radius:10px;
   overflow:hidden;
+  justify-content:space-between;
   background:
-    linear-gradient(0deg,transparent calc(50% - 1px),rgba(255,255,255,.76) calc(50% - 1px),rgba(255,255,255,.76) calc(50% + 1px),transparent calc(50% + 1px)),
+    radial-gradient(circle at 50% 100%,transparent 0 54px,rgba(255,255,255,.76) 55px 57px,transparent 58px),
+    radial-gradient(circle at 50% 20%,rgba(255,255,255,.88) 0 3px,transparent 4px),
     repeating-linear-gradient(0deg,#51b968 0 12.5%,#46ad5d 12.5% 25%);
   box-shadow:inset 0 0 0 1px rgba(15,83,38,.24);
 }
+/* Kazneni prostor od gol-linije prema terenu. */
 body[data-page="match"] .pitch::before{
   content:"";
   position:absolute;
-  left:50%;top:50%;
-  width:104px;height:104px;
-  transform:translate(-50%,-50%);
-  border:2px solid rgba(255,255,255,.72);
-  border-radius:50%;
+  z-index:0;
+  left:18%;
+  top:-3px;
+  width:64%;
+  height:30%;
+  border:2px solid rgba(255,255,255,.78);
+  border-top:0;
   pointer-events:none;
 }
+/* Golmanski prostor. */
 body[data-page="match"] .pitch::after{
   content:"";
   position:absolute;
-  left:50%;top:50%;
-  width:6px;height:6px;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:rgba(255,255,255,.82);
+  z-index:0;
+  left:34%;
+  top:-3px;
+  width:32%;
+  height:13%;
+  border:2px solid rgba(255,255,255,.78);
+  border-top:0;
   pointer-events:none;
 }
 body[data-page="match"] .pitch-row{
@@ -65,6 +74,9 @@ body[data-page="match"] .pitch-row{
   flex-wrap:nowrap;
   align-items:flex-start;
 }
+/* GK bliže golu, napadači bliže centru. */
+body[data-page="match"] .pitch-row:first-child{margin-top:-13px}
+body[data-page="match"] .pitch-row:last-child{margin-bottom:-4px}
 
 body[data-page="match"] .player-chip{
   min-width:74px;
@@ -152,7 +164,9 @@ body[data-page="match"] .bench .player-chip span{font-size:.62rem}
 
 @media(max-width:760px){
   body[data-page="match"] .squad-panel{border-radius:14px}
-  body[data-page="match"] .pitch{min-height:440px;margin:10px;padding:18px 5px}
+  body[data-page="match"] .pitch{min-height:410px;margin:10px;padding:32px 5px 17px}
+  body[data-page="match"] .pitch::before{left:14%;width:72%;height:29%}
+  body[data-page="match"] .pitch::after{left:31%;width:38%;height:12%}
   body[data-page="match"] .pitch-row{gap:2px}
   body[data-page="match"] .player-chip{min-width:58px;max-width:76px;padding-inline:2px}
   body[data-page="match"] .player-shirt{height:43px}
@@ -167,7 +181,7 @@ body[data-page="match"] .bench .player-chip span{font-size:.62rem}
 }
 
 @media(max-width:390px){
-  body[data-page="match"] .pitch{margin:8px 6px;padding-inline:2px}
+  body[data-page="match"] .pitch{min-height:390px;margin:8px 6px;padding-inline:2px}
   body[data-page="match"] .player-chip{min-width:52px;max-width:68px}
   body[data-page="match"] .player-chip strong{font-size:.52rem}
   body[data-page="match"] .player-chip span{font-size:.56rem}
