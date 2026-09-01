@@ -1,0 +1,23 @@
+.article-page{max-width:940px;padding-top:34px}
+.article-back{display:inline-block;margin:0 0 18px;color:var(--muted);font-size:.82rem;font-weight:800;text-decoration:none}
+.article-back:hover{color:var(--text)}
+.article-shell{border:1px solid var(--line);border-radius:20px;background:rgba(12,20,15,.82);overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.article-head{padding:38px 44px 26px;border-bottom:1px solid var(--line)}
+.article-title{margin:10px 0 16px;font-size:clamp(2rem,5vw,4.4rem);line-height:.98;letter-spacing:-.055em}
+.article-meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.78rem;font-weight:700}
+.article-meta span+span:before{content:'·';margin-right:12px;color:var(--line-strong,#6d786f)}
+.article-content{padding:38px 44px 48px;font-size:1rem;line-height:1.78;color:#dce5df}
+.article-content>*:first-child{margin-top:0}
+.article-content>*:last-child{margin-bottom:0}
+.article-content h2,.article-content h3,.article-content h4{color:var(--text);line-height:1.15;letter-spacing:-.025em;margin:2.1em 0 .7em}
+.article-content h2{font-size:1.65rem}.article-content h3{font-size:1.3rem}
+.article-content p{margin:0 0 1.2em}
+.article-content strong{color:#fff}
+.article-content a{color:#d7bc63;text-decoration:underline;text-underline-offset:3px}
+.article-content blockquote{margin:1.6em 0;padding:15px 18px;border-left:3px solid #d7bc63;background:rgba(215,188,99,.07);border-radius:0 10px 10px 0}
+.article-content ul,.article-content ol{padding-left:1.35em;margin:1em 0 1.4em}
+.article-content li{margin:.35em 0}
+.article-content img{display:block;max-width:100%;height:auto;margin:1.7em auto;border-radius:14px}
+.article-content figure{margin:1.8em 0}.article-content figcaption{text-align:center;color:var(--muted);font-size:.76rem;margin-top:8px}
+.article-content hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+@media(max-width:760px){.article-page{width:calc(100% - 16px);padding-top:22px}.article-shell{border-radius:14px}.article-head{padding:25px 18px 20px}.article-title{font-size:clamp(2rem,11vw,3rem)}.article-content{padding:24px 18px 34px;font-size:.93rem;line-height:1.7}.article-content h2{font-size:1.35rem}.article-content h3{font-size:1.15rem}}
