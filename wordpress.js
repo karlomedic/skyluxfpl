@@ -28,11 +28,24 @@
     return'Redakcija';
   }
 
+  function wpId(post){return post?.id??post?.ID}
+  function wpTitle(post){return post?.title?.rendered??post?.title??'Bez naslova'}
+  function wpExcerpt(post){return post?.excerpt?.rendered??post?.excerpt??''}
+  function wpContent(post){return post?.content?.rendered??post?.content??''}
+  function normalizePosts(value){
+    if(Array.isArray(value))return value;
+    if(Array.isArray(value?.posts))return value.posts;
+    return [];
+  }
+
   async function fetchPosts(){
     if(!postsPromise){
       postsPromise=fetch('/api/articles',{cache:'no-store',headers:{Accept:'application/json'}})
-        .then(r=>{if(!r.ok)throw new Error(`WordPress ${r.status}`);return r.json()})
-        .then(v=>Array.isArray(v)?v:[])
+        .then(async r=>{
+          if(!r.ok){const text=await r.text().catch(()=>'');throw new Error(`WordPress ${r.status}${text?` · ${text.slice(0,120)}`:''}`)}
+          return r.json();
+        })
+        .then(normalizePosts)
         .catch(e=>{postsPromise=null;throw e});
     }
     return postsPromise;
@@ -51,10 +64,11 @@
       const posts=(await fetchPosts()).slice(0,count);
       if(!posts.length){host.innerHTML='<div class="empty">Redakcija priprema novi tekst.</div>';return}
       host.innerHTML=posts.map(post=>{
-        const title=htmlText(post?.title?.rendered||post?.title||'Bez naslova');
-        let excerpt=htmlText(post?.excerpt?.rendered||post?.excerpt||'');
+        const id=wpId(post);
+        const title=htmlText(wpTitle(post));
+        let excerpt=htmlText(wpExcerpt(post));
         excerpt=excerpt.replace(/\s*\[…\]\s*$/,'').replace(/\s*\[&hellip;\]\s*$/,'');
-        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(post.id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>D. Olivari</span><span>${escapeHtml(formatDate(post.date))}</span></div></a>`;
+        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>D. Olivari</span><span>${escapeHtml(formatDate(post.date))}</span></div></a>`;
       }).join('');
     }catch(e){
       console.error('WordPress posts error',e);
@@ -92,13 +106,13 @@
     }
     try{
       const r=await fetch(`/api/article/${id}`,{cache:'no-store',headers:{Accept:'application/json'}});
-      if(!r.ok)throw new Error(`WordPress ${r.status}`);
+      if(!r.ok){const text=await r.text().catch(()=>'');throw new Error(`WordPress ${r.status}${text?` · ${text.slice(0,120)}`:''}`)}
       const post=await r.json();
-      const title=htmlText(post?.title?.rendered||'Članak');
+      const title=htmlText(wpTitle(post));
       document.title=`${title} · SkyLux FPL`;
       if(titleEl)titleEl.textContent=title;
       if(metaEl)metaEl.innerHTML=`<span>D. Olivari</span><span>${escapeHtml(formatDate(post.date))}</span>`;
-      if(host)host.innerHTML=sanitizeArticleHtml(post?.content?.rendered||'');
+      if(host)host.innerHTML=sanitizeArticleHtml(wpContent(post));
     }catch(e){
       console.error('WordPress article error',e);
       if(host)host.innerHTML='<div class="notice">Članak trenutno nije dostupan.</div>';
