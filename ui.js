@@ -4,10 +4,10 @@ async function getSquadSnapshot(entry,gw,live){
   const key=`${entry.entryId}:${gw}`;
   let data=squadPicksCache.get(key);
   if(!data){data=await fetchJson(`/api/entry/${entry.entryId}/event/${gw}`);squadPicksCache.set(key,data)}
-  const picks=extractPicks(data),pmap=playerMap(),pts=livePointMap(live);
+  const picks=extractPicks(data),pmap=playerMap(),pts=livePointMap(live),teams=new Map(asArray(state.bootstrap?.teams).map(t=>[num(t.id,-1),t]));
   const all=picks.map((p,i)=>{
-    const id=num(p.element??p.element_id??p.id,-1),player=pmap.get(id)||{};
-    return{id,name:player.web_name||player.second_name||player.first_name||`Igrač ${id}`,type:num(player.element_type??p.element_type,0),position:num(p.position??p.pick_position??i+1,i+1),points:pts.has(id)?num(pts.get(id),0):num(p.points??p.total_points,0)}
+    const id=num(p.element??p.element_id??p.id,-1),player=pmap.get(id)||{},teamId=num(player.team??p.team,-1),club=teams.get(teamId)||{};
+    return{id,name:player.web_name||player.second_name||player.first_name||`Igrač ${id}`,type:num(player.element_type??p.element_type,0),position:num(p.position??p.pick_position??i+1,i+1),points:pts.has(id)?num(pts.get(id),0):num(p.points??p.total_points,0),teamId,teamCode:num(club.code??club.id,0),club:club.short_name||club.name||''}
   }).sort((a,b)=>a.position-b.position);
   const start=all.filter((p,i)=>p.position<=11||(p.position===0&&i<11));
   const bench=all.filter((p,i)=>!(p.position<=11||(p.position===0&&i<11)));
@@ -40,9 +40,19 @@ function renderMiniTable(target,block,throughGw,compact=false){const table=typeo
 function renderLeagueTable(target,compact=false){const table=typeof target==='string'?qs(target):target;if(!table)return;qs('tbody',table).innerHTML=standingsRows().map(r=>`<tr class="${r.rank===1?'leader':''}"><td class="rank">${r.rank}</td><td><span class="team-name">${esc(r.team)}</span><span class="manager-name">${esc(r.manager)}</span></td>${compact?'':`<td class="num">${r.played}</td><td class="num">${r.won}</td><td class="num">${r.drawn}</td><td class="num">${r.lost}</td>`}<td class="num emph">${r.h2h}</td><td class="num">${r.for}</td>${compact?'':`<td class="num">${r.against}</td><td class="num">${r.for-r.against}</td>`}</tr>`).join('')}
 function renderLatestNews(target,count=3){const host=typeof target==='string'?qs(target):target;if(!host)return;const a=asArray(state.articles?.articles).slice(0,count);host.innerHTML=a.map(x=>{const url=x.url||'/redakcija.html',ext=Boolean(x.external||/^https?:/.test(url));return`<a class="news-card" href="${esc(url)}" ${ext?'target="_blank" rel="noopener noreferrer"':''}><span class="news-type">${esc(x.type||'Redakcija')}</span><h3>${esc(x.title)}</h3><p>${esc(x.excerpt||'')}</p><div class="news-meta"><span>${esc(x.author||'D. Olivari')}</span><span>${esc(x.date||'')}</span></div></a>`}).join('')||'<div class="empty">Redakcija priprema novi tekst.</div>'}
 
+function fplShirtUrl(player){
+  if(!player.teamCode)return'';
+  const goalkeeper=player.type===1?'_1':'';
+  return`https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${player.teamCode}${goalkeeper}-66.png`
+}
+function squadPlayerCard(p){
+  const shirt=fplShirtUrl(p),club=p.club?` · ${p.club}`:'';
+  return`<div class="player-chip ${p.type===1?'gk':''}" title="${esc(p.name+club)}"><div class="player-shirt${shirt?'':' is-fallback'}">${shirt?`<img src="${shirt}" loading="lazy" decoding="async" alt="${esc(p.club||'Klupski dres')}" onerror="this.parentElement.classList.add('is-fallback');this.remove()">`:''}</div><strong>${esc(p.name)}</strong><span>${p.points} pts</span></div>`
+}
+
 async function renderSquad(host,entry,gw,live,snapshot=null){
   host.innerHTML='<div class="loading">Dohvaćam postavu…</div>';
-  try{const snap=snapshot||await getSquadSnapshot(entry,gw,live),{start,bench}=snap;if(!start.length)throw new Error('No lineup');const rows=[1,2,3,4].map(t=>start.filter(p=>p.type===t)).filter(r=>r.length);host.innerHTML=`<div class="squad-head"><div><h2>${esc(entry.team)}</h2><p>${esc(entry.manager)}</p></div><span class="badge live">${snap.total} pts</span></div><div class="pitch">${rows.map(r=>`<div class="pitch-row">${r.map(p=>`<div class="player-chip"><strong title="${esc(p.name)}">${esc(p.name)}</strong><span>${p.points} pts</span></div>`).join('')}</div>`).join('')}</div><div class="bench"><div class="bench-title">Klupa</div><div class="bench-grid">${bench.map(p=>`<div class="player-chip"><strong title="${esc(p.name)}">${esc(p.name)}</strong><span>${p.points} pts</span></div>`).join('')||'<span class="manager-name">Nema podataka o klupi.</span>'}</div></div>`;return snap}catch(e){console.error(e);host.innerHTML='<div class="empty">Postava za ovo kolo trenutno nije dostupna iz Draft API-ja.</div>';return null}
+  try{const snap=snapshot||await getSquadSnapshot(entry,gw,live),{start,bench}=snap;if(!start.length)throw new Error('No lineup');const rows=[1,2,3,4].map(t=>start.filter(p=>p.type===t)).filter(r=>r.length);host.innerHTML=`<div class="squad-head"><div><h2>${esc(entry.team)}</h2><p>${esc(entry.manager)}</p></div><span class="badge live">${snap.total} pts</span></div><div class="pitch">${rows.map(r=>`<div class="pitch-row">${r.map(squadPlayerCard).join('')}</div>`).join('')}</div><div class="bench"><div class="bench-title">Klupa</div><div class="bench-grid">${bench.map(squadPlayerCard).join('')||'<span class="manager-name">Nema podataka o klupi.</span>'}</div></div>`;return snap}catch(e){console.error(e);host.innerHTML='<div class="empty">Postava za ovo kolo trenutno nije dostupna iz Draft API-ja.</div>';return null}
 }
 
 function renderShame(target){const host=typeof target==='string'?qs(target):target;if(!host)return;const m=shameMetrics();host.innerHTML=m.map(x=>`<article class="shame-card"><div class="shame-icon">${x.icon}</div><div class="shame-label">${esc(x.label)}</div><div class="shame-value">${esc(x.value)}</div><div class="shame-sub">${esc(x.sub)}</div></article>`).join('')||'<div class="empty">Hall of Shame čeka prve završene rezultate.</div>'}
