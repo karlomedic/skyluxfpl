@@ -5,22 +5,6 @@
     }
   }
 
-  const brandStyle=document.createElement('style');
-  brandStyle.textContent='.brand-mark.has-logo{width:48px;height:44px;padding:0;background:transparent;box-shadow:none;overflow:visible;border-radius:0}.brand-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))}';
-  document.head.appendChild(brandStyle);
-
-  function applySkyLuxBrand(){
-    document.querySelectorAll('.brand-mark').forEach(mark=>{
-      const img=document.createElement('img');
-      img.src='/assets/skylux-crest.svg?v=1';
-      img.alt='SkyLux Fantasy League grb';
-      img.loading='eager';
-      mark.classList.add('has-logo');
-      mark.replaceChildren(img);
-    });
-  }
-  applySkyLuxBrand();
-
   const nav=document.querySelector('#mainNav');
   if(nav&&!nav.querySelector('a[href="/about.html"]')){
     const link=document.createElement('a');
@@ -30,22 +14,6 @@
   }
 
   if(document.body.dataset.page==='about'){
-    const photoStyle=document.createElement('style');
-    photoStyle.textContent='.manager-photo{height:280px;overflow:hidden;border-bottom:1px solid var(--line);background:#0a1320}.manager-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 24%}@media(max-width:560px){.manager-photo{height:235px}}';
-    document.head.appendChild(photoStyle);
-
-    const jakov=document.querySelector('#jakov-vrdoljak');
-    if(jakov&&!jakov.querySelector('.manager-photo')){
-      fetch('/assets/about/jakov-vrdoljak.b64',{cache:'force-cache'})
-        .then(r=>{if(!r.ok)throw new Error(`Jakov photo ${r.status}`);return r.text()})
-        .then(data=>{
-          const wrap=document.createElement('div');wrap.className='manager-photo';
-          const img=document.createElement('img');img.src=`data:image/jpeg;base64,${data.trim()}`;img.alt='Jakov Vrdoljak';img.loading='eager';img.decoding='async';
-          wrap.appendChild(img);jakov.insertBefore(wrap,jakov.firstElementChild);
-        })
-        .catch(e=>console.warn('Jakov portret nije učitan',e));
-    }
-
     document.querySelectorAll('.archive-copy > span').forEach(x=>x.textContent='IZ ARHIVE');
     const tokic=document.querySelector('#robert-tokic');
     if(tokic){
