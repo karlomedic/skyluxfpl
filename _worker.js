@@ -1,5 +1,6 @@
 const DRAFT_BASE = 'https://draft.premierleague.com';
 const WORDPRESS_BASE = 'https://public-api.wordpress.com/wp/v2/sites/fplskylux.wordpress.com';
+const WORDPRESS_SITE = 'https://public-api.wordpress.com/rest/v1.1/sites/fplskylux.wordpress.com';
 const LEAGUE_ID = 13174;
 
 async function proxy(path, ttl = 20) {
@@ -40,6 +41,25 @@ async function wordpress(path, ttl = 60) {
   });
 }
 
+async function wordpressSite(ttl = 3600) {
+  const upstream = await fetch(`${WORDPRESS_SITE}?fields=name,URL,icon,logo`, {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'SkyLux-FPL/WordPress-Brand'
+    }
+  });
+  const body = await upstream.arrayBuffer();
+  const headers = new Headers(upstream.headers);
+  headers.set('Cache-Control', `public, max-age=${ttl}, s-maxage=${ttl}`);
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('X-SkyLux-Source', 'WordPress.com Site');
+  return new Response(body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -49,7 +69,8 @@ export default {
     if (url.pathname === '/api/element-status') return proxy(`/api/league/${LEAGUE_ID}/element-status`, 20);
     if (url.pathname === '/api/transactions') return proxy(`/api/draft/league/${LEAGUE_ID}/transactions`, 30);
 
-    // WordPress.com is the editorial CMS. Public posts require no auth.
+    // WordPress.com is the editorial CMS. Public posts and site branding require no auth.
+    if (url.pathname === '/api/site-brand') return wordpressSite(3600);
     if (url.pathname === '/api/articles') {
       return wordpress('/posts?per_page=30&orderby=date&order=desc&_fields=id,date,modified,slug,title,excerpt,link', 60);
     }
