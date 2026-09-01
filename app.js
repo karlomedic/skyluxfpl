@@ -13,5 +13,16 @@
     nav.insertBefore(link,blog||null);
   }
 
-  const s=document.createElement('script');s.src='/page.js';s.defer=true;s.onerror=()=>{console.error('page.js se nije učitao');const t=document.querySelector('#toast');if(t){t.textContent='Aplikacija se nije učitala.';t.className='toast show error'}};document.head.appendChild(s);
+  const loadPage=()=>{
+    const s=document.createElement('script');
+    s.src='/page.js';
+    s.onerror=()=>{console.error('page.js se nije učitao');const t=document.querySelector('#toast');if(t){t.textContent='Aplikacija se nije učitala.';t.className='toast show error'}};
+    document.head.appendChild(s);
+  };
+
+  const wp=document.createElement('script');
+  wp.src='/wordpress.js';
+  wp.onload=loadPage;
+  wp.onerror=()=>{console.warn('WordPress integracija se nije učitala');loadPage()};
+  document.head.appendChild(wp);
 })();
