@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/article.css">
+  <link rel="stylesheet" href="/article.css?v=2">
 </head>
 <body data-page="editorial" data-article-page="true">
 <header class="site-header">
@@ -31,8 +31,41 @@
     </header>
     <div id="articleBody" class="article-content"><div class="loading">Dohvaćam tekst…</div></div>
   </article>
+
+  <section class="article-comments" aria-labelledby="commentsTitle">
+    <div class="comments-head">
+      <div>
+        <span class="page-kicker">Tribina</span>
+        <h2 id="commentsTitle">Komentari <span id="commentCount">0</span></h2>
+      </div>
+      <span class="comments-note">Bez registracije</span>
+    </div>
+
+    <form id="commentForm" class="comment-form">
+      <div class="comment-form-top">
+        <label>
+          <span>Ime</span>
+          <input id="commentAuthor" name="author" type="text" minlength="2" maxlength="40" autocomplete="name" placeholder="Tvoje ime" required>
+        </label>
+      </div>
+      <label>
+        <span>Komentar</span>
+        <textarea id="commentBody" name="body" rows="4" maxlength="1000" placeholder="Napiši komentar…" required></textarea>
+      </label>
+      <label class="comment-honeypot" aria-hidden="true">
+        <span>Website</span>
+        <input id="commentWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+      </label>
+      <div class="comment-form-actions">
+        <small id="commentStatus" aria-live="polite"></small>
+        <button id="commentSubmit" type="submit">Objavi komentar</button>
+      </div>
+    </form>
+
+    <div id="commentsList" class="comments-list"><div class="comments-empty">Dohvaćam komentare…</div></div>
+  </section>
 </main>
 <footer class="footer"><div class="container footer-inner"><span><strong>SkyLux FPL Draft League</strong></span><span>Redakcija: <strong>D. Olivari</strong> · neslužbeni prijateljski projekt</span></div></footer>
 <div id="toast" class="toast" role="status"></div>
-<script src="/core.js" defer></script><script src="/ui.js" defer></script><script src="/app.js" defer></script>
+<script src="/core.js" defer></script><script src="/ui.js" defer></script><script src="/app.js" defer></script><script src="/comments.js?v=1" defer></script>
 </body></html>
