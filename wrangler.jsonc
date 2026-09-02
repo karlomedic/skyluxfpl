@@ -7,5 +7,19 @@
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"],
     "html_handling": "auto-trailing-slash"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ARTICLE_COMMENTS",
+        "class_name": "ArticleComments"
+      }
+    ]
+  },
+  "exports": {
+    "ArticleComments": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
   }
 }
