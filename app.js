@@ -31,13 +31,13 @@
 
   const loadPage=()=>{
     const s=document.createElement('script');
-    s.src='/page.js?v=20260902-3';
+    s.src='/page.js?v=20260902-4';
     s.onerror=()=>{console.error('page.js se nije učitao');const t=document.querySelector('#toast');if(t){t.textContent='Aplikacija se nije učitala.';t.className='toast show error'}};
     document.head.appendChild(s);
   };
 
   const wp=document.createElement('script');
-  wp.src='/wordpress.js';
+  wp.src='/wordpress.js?v=20260902-4';
   wp.onload=loadPage;
   wp.onerror=()=>{console.warn('WordPress integracija se nije učitala');loadPage()};
   document.head.appendChild(wp);
