@@ -12,10 +12,42 @@ export class ArticleComments extends DurableObject {
         created_at INTEGER NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at DESC);
+      CREATE TABLE IF NOT EXISTS comment_meta (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
     `);
   }
 
+  cleanupMarioKovacevicComment() {
+    const marker = this.ctx.storage.sql
+      .exec("SELECT value FROM comment_meta WHERE key = 'cleanup_mario_kovacevic_v1' LIMIT 1")
+      .toArray();
+    if (marker.length) return false;
+
+    const rows = this.ctx.storage.sql
+      .exec('SELECT id, body FROM comments ORDER BY created_at DESC, id DESC')
+      .toArray();
+    const target = rows.find(row => {
+      const text = String(row.body || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+      return /mari[ao]\s+kovacevic/.test(text);
+    });
+
+    if (target) {
+      this.ctx.storage.sql.exec('DELETE FROM comments WHERE id = ?', target.id);
+    }
+    this.ctx.storage.sql.exec(
+      "INSERT OR REPLACE INTO comment_meta (key, value) VALUES ('cleanup_mario_kovacevic_v1', ?)",
+      String(Date.now())
+    );
+    return Boolean(target);
+  }
+
   list() {
+    this.cleanupMarioKovacevicComment();
     return this.ctx.storage.sql
       .exec('SELECT id, author, body, created_at FROM comments ORDER BY created_at DESC, id DESC LIMIT 100')
       .toArray();
