@@ -1,8 +1,65 @@
+import { DurableObject } from 'cloudflare:workers';
+
+export class ArticleComments extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.lastPostByClient = new Map();
+    this.ctx.storage.sql.exec(`
+      CREATE TABLE IF NOT EXISTS comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        author TEXT NOT NULL,
+        body TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at DESC);
+    `);
+  }
+
+  list() {
+    return this.ctx.storage.sql
+      .exec('SELECT id, author, body, created_at FROM comments ORDER BY created_at DESC, id DESC LIMIT 100')
+      .toArray();
+  }
+
+  add(author, body, clientKey) {
+    const now = Date.now();
+    const last = this.lastPostByClient.get(clientKey) || 0;
+    if (now - last < 12000) throw new Error('RATE_LIMIT');
+    const row = this.ctx.storage.sql
+      .exec(
+        'INSERT INTO comments (author, body, created_at) VALUES (?, ?, ?) RETURNING id, author, body, created_at',
+        author,
+        body,
+        now
+      )
+      .one();
+    this.lastPostByClient.set(clientKey, now);
+    return row;
+  }
+}
+
 const DRAFT_BASE = 'https://draft.premierleague.com';
 const WORDPRESS_BASE = 'https://public-api.wordpress.com/wp/v2/sites/fplskylux.wordpress.com';
 const WORDPRESS_SITE = 'https://public-api.wordpress.com/rest/v1.1/sites/fplskylux.wordpress.com';
 const WORDPRESS_HOME = 'https://fplskylux.wordpress.com/';
 const LEAGUE_ID = 13174;
+
+function json(data, status = 200, headers = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+      ...headers
+    }
+  });
+}
+
+function requestClientKey(request) {
+  return request.headers.get('CF-Connecting-IP') ||
+    (request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() ||
+    'anonymous';
+}
 
 async function proxy(path, ttl = 20) {
   const upstream = await fetch(`${DRAFT_BASE}${path}`, {
@@ -181,6 +238,43 @@ export default {
     if (url.pathname === '/api/bootstrap') return proxy('/api/bootstrap-static', 300);
     if (url.pathname === '/api/element-status') return proxy(`/api/league/${LEAGUE_ID}/element-status`, 20);
     if (url.pathname === '/api/transactions') return proxy(`/api/draft/league/${LEAGUE_ID}/transactions`, 30);
+
+    const comments = url.pathname.match(/^\/api\/comments\/(\d+)$/);
+    if (comments) {
+      const stub = env.ARTICLE_COMMENTS.getByName(`article:${comments[1]}`);
+      if (request.method === 'GET') {
+        const items = await stub.list();
+        return json({ comments: items });
+      }
+      if (request.method === 'POST') {
+        let payload;
+        try {
+          payload = await request.json();
+        } catch {
+          return json({ error: 'Neispravan zahtjev.' }, 400);
+        }
+        if (String(payload?.website || '').trim()) return json({ ok: true }, 201);
+        const author = String(payload?.author || '').replace(/\s+/g, ' ').trim();
+        const body = String(payload?.body || '').replace(/\r\n?/g, '\n').trim();
+        if (author.length < 2 || author.length > 40) {
+          return json({ error: 'Ime mora imati između 2 i 40 znakova.' }, 400);
+        }
+        if (!body || body.length > 1000) {
+          return json({ error: 'Komentar mora imati između 1 i 1000 znakova.' }, 400);
+        }
+        try {
+          const comment = await stub.add(author, body, requestClientKey(request));
+          return json({ comment }, 201);
+        } catch (e) {
+          if (String(e?.message || '').includes('RATE_LIMIT')) {
+            return json({ error: 'Pričekaj nekoliko sekundi prije novog komentara.' }, 429);
+          }
+          console.error('Comment save error', e);
+          return json({ error: 'Komentar trenutno nije moguće spremiti.' }, 500);
+        }
+      }
+      return json({ error: 'Method not allowed' }, 405, { Allow: 'GET, POST' });
+    }
 
     if (url.pathname === '/api/site-brand') return wordpressSite(3600);
     if (url.pathname === '/api/site-logo') return wordpressLogo(86400);
