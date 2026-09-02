@@ -20,4 +20,32 @@
 .article-content img{display:block;max-width:100%;height:auto;margin:1.7em auto;border-radius:14px}
 .article-content figure{margin:1.8em 0}.article-content figcaption{text-align:center;color:var(--muted);font-size:.76rem;margin-top:8px}
 .article-content hr{border:0;border-top:1px solid var(--line);margin:2em 0}
-@media(max-width:760px){.article-page{width:calc(100% - 16px);padding-top:22px}.article-shell{border-radius:14px}.article-head{padding:25px 18px 20px}.article-title{font-size:clamp(2rem,11vw,3rem)}.article-content{padding:24px 18px 34px;font-size:.93rem;line-height:1.7}.article-content h2{font-size:1.35rem}.article-content h3{font-size:1.15rem}}
+
+.article-comments{margin:24px 0 8px;padding:28px;border:1px solid var(--line);border-radius:20px;background:rgba(12,20,15,.82);box-shadow:0 18px 55px rgba(0,0,0,.16)}
+.comments-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.comments-head h2{margin:7px 0 0;font-size:1.65rem;letter-spacing:-.03em}
+.comments-head h2 span{display:inline-grid;place-items:center;min-width:28px;height:28px;margin-left:6px;padding:0 8px;border:1px solid rgba(205,255,69,.22);border-radius:999px;background:rgba(205,255,69,.07);color:var(--accent);font-size:.72rem;vertical-align:middle}
+.comments-note{padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.comment-form{display:grid;gap:12px;padding:18px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.025)}
+.comment-form label{display:grid;gap:7px}
+.comment-form label>span{color:var(--muted);font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.comment-form-top{display:grid;grid-template-columns:minmax(0,280px) 1fr;gap:12px}
+.comment-form input,.comment-form textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:11px;background:rgba(4,9,6,.72);color:var(--text);font:inherit;outline:none;transition:border-color .16s ease,box-shadow .16s ease}
+.comment-form input{height:44px;padding:0 13px}
+.comment-form textarea{min-height:110px;padding:12px 13px;line-height:1.5;resize:vertical}
+.comment-form input:focus,.comment-form textarea:focus{border-color:rgba(205,255,69,.45);box-shadow:0 0 0 3px rgba(205,255,69,.07)}
+.comment-form-actions{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.comment-form-actions small{min-height:1em;color:var(--muted);font-size:.74rem}
+.comment-form-actions button{appearance:none;border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:#0a0f0b;font:inherit;font-size:.78rem;font-weight:900;cursor:pointer}
+.comment-form-actions button:disabled{opacity:.55;cursor:wait}
+.comment-honeypot{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
+.comments-list{display:grid;gap:10px;margin-top:16px}
+.comment-item{padding:15px 16px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.018)}
+.comment-item-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:7px}
+.comment-item-head strong{font-size:.88rem}
+.comment-item-head time{color:var(--muted);font-size:.67rem;font-weight:700;white-space:nowrap}
+.comment-item p{margin:0;color:#dce5df;font-size:.86rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.comments-empty{padding:16px;border:1px dashed rgba(255,255,255,.09);border-radius:12px;color:var(--muted);font-size:.8rem;text-align:center}
+.comments-empty.error{color:#e6b7b7}
+
+@media(max-width:760px){.article-page{width:calc(100% - 16px);padding-top:22px}.article-shell{border-radius:14px}.article-head{padding:25px 18px 20px}.article-title{font-size:clamp(2rem,11vw,3rem)}.article-content{padding:24px 18px 34px;font-size:.93rem;line-height:1.7}.article-content h2{font-size:1.35rem}.article-content h3{font-size:1.15rem}.article-comments{margin-top:16px;padding:18px;border-radius:14px}.comments-head{align-items:center}.comments-head h2{font-size:1.35rem}.comments-note{font-size:.6rem}.comment-form{padding:14px}.comment-form-top{grid-template-columns:1fr}.comment-form-actions{align-items:flex-end;flex-direction:column}.comment-form-actions small{align-self:flex-start}.comment-form-actions button{width:100%}.comment-item-head{align-items:flex-start;flex-direction:column;gap:3px}.comment-item-head time{white-space:normal}}
