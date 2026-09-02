@@ -36,7 +36,7 @@
 .comment-form input:focus,.comment-form textarea:focus{border-color:rgba(205,255,69,.45);box-shadow:0 0 0 3px rgba(205,255,69,.07)}
 .comment-form-actions{display:flex;align-items:center;justify-content:space-between;gap:14px}
 .comment-form-actions small{min-height:1em;color:var(--muted);font-size:.74rem}
-.comment-form-actions button{appearance:none;border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:#0a0f0b;font:inherit;font-size:.78rem;font-weight:900;cursor:pointer}
+.comment-form-actions button{appearance:none;border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:#fff;font:inherit;font-size:.78rem;font-weight:900;cursor:pointer}
 .comment-form-actions button:disabled{opacity:.55;cursor:wait}
 .comment-honeypot{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
 .comments-list{display:grid;gap:10px;margin-top:16px}
