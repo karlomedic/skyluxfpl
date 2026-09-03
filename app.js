@@ -31,7 +31,7 @@
 
   const loadPage=()=>{
     const s=document.createElement('script');
-    s.src='/page.js?v=20260902-4';
+    s.src='/page.js?v=20260903-1';
     s.onerror=()=>{console.error('page.js se nije učitao');const t=document.querySelector('#toast');if(t){t.textContent='Aplikacija se nije učitala.';t.className='toast show error'}};
     document.head.appendChild(s);
   };
