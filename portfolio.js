@@ -86,7 +86,7 @@
   }
 
   function loadSprite(){
-    document.documentElement.style.setProperty('--manager-sprite','url("/assets/portfolio/managers-sprite-sharp.jpg?v=20260903-5")');
+    document.documentElement.style.setProperty('--manager-sprite','url("/assets/portfolio/managers-sprite-sharp.avif?v=20260903-6")');
   }
 
   function escapeHtml(value=''){
