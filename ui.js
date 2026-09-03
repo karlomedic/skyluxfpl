@@ -1,6 +1,14 @@
 const squadPicksCache=new Map();
 
+function lineupsAvailableForGw(gw){
+  const n=num(gw,0),current=num(state.currentGw,0),event=currentEventInfo(n);
+  if(n<current||event?.finished)return true;
+  const deadline=event?.deadline_time?new Date(event.deadline_time).getTime():0;
+  return Boolean(deadline&&Date.now()>=deadline)
+}
+
 async function getSquadSnapshot(entry,gw,live){
+  if(!lineupsAvailableForGw(gw))throw new Error('Postave trenutno nisu dostupne.');
   const key=`${entry.entryId}:${gw}`;
   let data=squadPicksCache.get(key);
   if(!data){data=await fetchJson(`/api/entry/${entry.entryId}/event/${gw}`);squadPicksCache.set(key,data)}
@@ -23,7 +31,7 @@ function liveStatusForGw(gw,m){
 
 async function getDisplayedMatchScores(m,gw,live,entries){
   const a=entries.get(num(m.league_entry_1)),b=entries.get(num(m.league_entry_2));
-  if(m.finished||num(gw)<num(state.currentGw)||!a||!b)return{a:num(m.league_entry_1_points),b:num(m.league_entry_2_points)};
+  if(m.finished||num(gw)<num(state.currentGw)||!a||!b||!lineupsAvailableForGw(gw))return{a:num(m.league_entry_1_points),b:num(m.league_entry_2_points)};
   try{const[sa,sb]=await Promise.all([getSquadSnapshot(a,gw,live),getSquadSnapshot(b,gw,live)]);return{a:sa.total,b:sb.total}}catch(e){console.warn('Live score fallback',e);return{a:num(m.league_entry_1_points),b:num(m.league_entry_2_points)}}
 }
 
@@ -31,7 +39,7 @@ async function renderMatchCards(target,gw,limit=null){
   const host=typeof target==='string'?qs(target):target;if(!host)return;
   const entries=entryMap();let ms=matchesForGw(gw);if(limit)ms=ms.slice(0,limit);
   if(!ms.length){host.innerHTML='<div class="empty">Parovi za ovo kolo još nisu dostupni.</div>';return}
-  const live=num(gw)===num(state.currentGw)?await getLive(gw):null;
+  const live=lineupsAvailableForGw(gw)&&num(gw)===num(state.currentGw)?await getLive(gw):null;
   const rows=await Promise.all(ms.map(async m=>({m,scores:await getDisplayedMatchScores(m,gw,live,entries)})));
   host.innerHTML=rows.map(({m,scores})=>{const a=entries.get(num(m.league_entry_1))||{team:'—',manager:'—'},b=entries.get(num(m.league_entry_2))||{team:'—',manager:'—'},s=liveStatusForGw(gw,m);return`<a class="match-card" href="${matchUrl(m)}"><div class="match-team"><strong>${esc(a.team)}</strong><small>${esc(a.manager)}</small></div><div class="match-center"><div class="match-score">${scores.a} : ${scores.b}</div><div class="match-state ${s.cls==='live'?'live':''}">${s.label}</div></div><div class="match-team away"><strong>${esc(b.team)}</strong><small>${esc(b.manager)}</small></div></a>`}).join('')
 }
@@ -51,6 +59,7 @@ function squadPlayerCard(p){
 }
 
 async function renderSquad(host,entry,gw,live,snapshot=null){
+  if(!lineupsAvailableForGw(gw)){host.innerHTML='<div class="empty">Postave trenutno nisu dostupne.</div>';return null}
   host.innerHTML='<div class="loading">Dohvaćam postavu…</div>';
   try{const snap=snapshot||await getSquadSnapshot(entry,gw,live),{start,bench}=snap;if(!start.length)throw new Error('No lineup');const rows=[1,2,3,4].map(t=>start.filter(p=>p.type===t)).filter(r=>r.length);host.innerHTML=`<div class="squad-head"><div><h2>${esc(entry.team)}</h2><p>${esc(entry.manager)}</p></div><span class="badge live">${snap.total} pts</span></div><div class="pitch">${rows.map(r=>`<div class="pitch-row">${r.map(squadPlayerCard).join('')}</div>`).join('')}</div><div class="bench"><div class="bench-title">Klupa</div><div class="bench-grid">${bench.map(squadPlayerCard).join('')||'<span class="manager-name">Nema podataka o klupi.</span>'}</div></div>`;return snap}catch(e){console.error(e);host.innerHTML='<div class="empty">Postava za ovo kolo trenutno nije dostupna iz Draft API-ja.</div>';return null}
 }
