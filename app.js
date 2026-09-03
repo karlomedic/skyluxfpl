@@ -1,5 +1,5 @@
 (function(){
-  for(const href of ['/responsive.css','/mobile-v2.css','/portfolio.css?v=20260903-5']){
+  for(const href of ['/responsive.css','/mobile-v2.css','/portfolio.css?v=20260903-6']){
     if(!document.querySelector(`link[href="${href}"]`)){
       const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);
     }
@@ -45,7 +45,7 @@
   };
 
   const portfolio=document.createElement('script');
-  portfolio.src='/portfolio.js?v=20260903-5';
+  portfolio.src='/portfolio.js?v=20260903-6';
   portfolio.onload=loadWordpress;
   portfolio.onerror=()=>{console.warn('FantasyDraft portfolio sloj se nije učitao');loadWordpress()};
   document.head.appendChild(portfolio);
