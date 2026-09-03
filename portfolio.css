@@ -1,4 +1,4 @@
-:root{--manager-sprite:none}
+:root{--manager-sprite:url('/assets/portfolio/managers-sprite.jpg?v=20260903-2')}
 .manager-top.has-manager-portrait{grid-template-columns:72px minmax(0,1fr);align-items:start}
 .manager-number.has-portrait{position:relative;width:64px;height:64px;overflow:hidden;border-radius:14px;border:1px solid rgba(205,255,69,.3);background-image:var(--manager-sprite);background-size:500% 200%;background-repeat:no-repeat;background-color:#0a100d;color:transparent;box-shadow:0 10px 26px rgba(0,0,0,.24)}
 .manager-number.has-portrait::after{content:attr(data-number);position:absolute;right:5px;bottom:5px;display:grid;place-items:center;min-width:22px;height:20px;padding:0 5px;border-radius:7px;background:rgba(3,8,5,.82);border:1px solid rgba(255,255,255,.14);color:var(--accent);font-size:.56rem;font-weight:900;letter-spacing:.05em;backdrop-filter:blur(7px)}
