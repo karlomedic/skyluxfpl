@@ -86,13 +86,7 @@
   }
 
   function loadSprite(){
-    fetch('/assets/portfolio/managers-sprite-hq.b64?v=20260903-4',{cache:'force-cache'})
-      .then(r=>{if(!r.ok)throw new Error(`Portrait sprite ${r.status}`);return r.text()})
-      .then(raw=>{
-        const b64=raw.replace(/\s+/g,'');
-        if(b64)document.documentElement.style.setProperty('--manager-sprite',`url("data:image/jpeg;base64,${b64}")`);
-      })
-      .catch(e=>console.warn('FantasyDraft HQ portraits unavailable',e));
+    document.documentElement.style.setProperty('--manager-sprite','url("/assets/portfolio/managers-sprite-sharp.jpg?v=20260903-5")');
   }
 
   function escapeHtml(value=''){
