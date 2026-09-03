@@ -1,5 +1,5 @@
 (function(){
-  for(const href of ['/responsive.css','/mobile-v2.css']){
+  for(const href of ['/responsive.css','/mobile-v2.css','/portfolio.css?v=20260903-1']){
     if(!document.querySelector(`link[href="${href}"]`)){
       const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);
     }
@@ -31,14 +31,22 @@
 
   const loadPage=()=>{
     const s=document.createElement('script');
-    s.src='/page.js?v=20260902-4';
+    s.src='/page.js?v=20260903-1';
     s.onerror=()=>{console.error('page.js se nije učitao');const t=document.querySelector('#toast');if(t){t.textContent='Aplikacija se nije učitala.';t.className='toast show error'}};
     document.head.appendChild(s);
   };
 
-  const wp=document.createElement('script');
-  wp.src='/wordpress.js?v=20260902-4';
-  wp.onload=loadPage;
-  wp.onerror=()=>{console.warn('WordPress integracija se nije učitala');loadPage()};
-  document.head.appendChild(wp);
+  const loadWordpress=()=>{
+    const wp=document.createElement('script');
+    wp.src='/wordpress.js?v=20260903-1';
+    wp.onload=loadPage;
+    wp.onerror=()=>{console.warn('WordPress integracija se nije učitala');loadPage()};
+    document.head.appendChild(wp);
+  };
+
+  const portfolio=document.createElement('script');
+  portfolio.src='/portfolio.js?v=20260903-1';
+  portfolio.onload=loadWordpress;
+  portfolio.onerror=()=>{console.warn('FantasyDraft portfolio sloj se nije učitao');loadWordpress()};
+  document.head.appendChild(portfolio);
 })();
