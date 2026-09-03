@@ -13,7 +13,18 @@ function deriveCurrentGw(){const events=asArray(state.bootstrap?.events),cur=eve
 function currentEventInfo(gw=state.currentGw){return asArray(state.bootstrap?.events).find(e=>num(e.id)===num(gw))||{}}
 function blockForGw(gw){const b=[{id:1,start:1,end:7,label:'GW 1–7'},{id:2,start:8,end:14,label:'GW 8–14'},{id:3,start:15,end:21,label:'GW 15–21'},{id:4,start:22,end:28,label:'GW 22–28'},{id:5,start:29,end:35,label:'GW 29–35'}];return b.find(x=>gw>=x.start&&gw<=x.end)||(gw>35?b[4]:b[0])}
 function managerProfiles(){return asArray(state.managers?.managers)}
-function entryRecords(){const profiles=managerProfiles();return asArray(state.league?.league_entries).map(e=>{const team=e.entry_name||e.name||e.team_name||`Ekipa ${e.id??''}`;const full=[e.player_first_name,e.player_last_name].filter(Boolean).join(' ').trim();const profile=profiles.find(p=>(p.team&&p.team.toLowerCase()===String(team).toLowerCase())||(p.name&&full&&p.name.toLowerCase()===full.toLowerCase()));return{leagueEntryId:num(e.id??e.league_entry??e.league_entry_id,-1),entryId:num(e.entry_id??e.entry??e.id,-1),team,manager:full||profile?.name||e.player_name||'—',raw:e,profile}})}
+const CANONICAL_MANAGER_BY_TEAM=new Map([
+  ['markuševec city','Petar Medić'],
+  ['borova glava','Marko Mihaljević'],
+  ['rubenovi obrazi','Ante Babić'],
+  ['hnk grboreški biser','Ivan Vrdoljak'],
+  ['fc hudi','Karlo Medić'],
+  ['nk rasulo','Jakov Vrdoljak'],
+  ['tekstilac derventa','Robert Tokić'],
+  ['oranje','Kristian Radoš']
+]);
+function canonicalManagerName(team,profile,apiName,fallback){return CANONICAL_MANAGER_BY_TEAM.get(String(team||'').trim().toLocaleLowerCase('hr-HR'))||profile?.name||apiName||fallback||'—'}
+function entryRecords(){const profiles=managerProfiles();return asArray(state.league?.league_entries).map(e=>{const team=e.entry_name||e.name||e.team_name||`Ekipa ${e.id??''}`;const full=[e.player_first_name,e.player_last_name].filter(Boolean).join(' ').trim();const profile=profiles.find(p=>(p.team&&p.team.toLowerCase()===String(team).toLowerCase())||(p.name&&full&&p.name.toLowerCase()===full.toLowerCase()));return{leagueEntryId:num(e.id??e.league_entry??e.league_entry_id,-1),entryId:num(e.entry_id??e.entry??e.id,-1),team,manager:canonicalManagerName(team,profile,full,e.player_name),raw:e,profile}})}
 function entryMap(){return new Map(entryRecords().map(e=>[e.leagueEntryId,e]))}
 function finishedPlayedMap(){const out=new Map();for(const m of asArray(state.league?.matches)){if(!m.finished)continue;for(const id of [num(m.league_entry_1,-1),num(m.league_entry_2,-1)])if(id>=0)out.set(id,(out.get(id)||0)+1)}return out}
 function standingsRows(){const entries=entryMap(),playedMap=finishedPlayedMap();const rows=asArray(state.league?.standings).map((r,i)=>{const id=num(r.league_entry??r.id??r.entry_id,-1),e=entries.get(id)||{team:`Ekipa ${id}`,manager:'—'};return{id,team:e.team,manager:e.manager,rank:num(r.rank,i+1),played:playedMap.get(id)||0,won:num(r.matches_won??r.won??r.w,0),drawn:num(r.matches_drawn??r.drawn??r.d,0),lost:num(r.matches_lost??r.lost??r.l,0),h2h:num(r.total??r.points??r.h2h_points,0),for:num(r.points_for??r.score??r.fantasy_points,0),against:num(r.points_against??r.points_against_total??r.against,0)}});rows.sort((a,b)=>a.rank-b.rank||b.h2h-a.h2h||b.for-a.for);return rows}
