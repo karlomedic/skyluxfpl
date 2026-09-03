@@ -2,13 +2,13 @@
   "league_id": 13174,
   "editorial_note": "Profiles for a private friends fantasy league. Use dry sports-column satire; treat disputed old stories as league lore, not verified allegations. Avoid identity-based insults.",
   "managers": [
-    {"name":"Robert Tokić","team":"Tekstilac Derventa","titles":2,"persona":["self-styled Special One","serial contender"],"running_jokes":["Tradegate / kumovska era as league lore","Liverpool goalkeeper 90th-minute title mythology","Tarik Muharemović = Rolls-Royce"],"rivalries":["Ivan Vrdoljak","Jakov Vrdoljak"]},
-    {"name":"Petar Medić","team":"Markuševec City","titles":1,"persona":["league president","permanent trader"],"running_jokes":["inaugural champion still chasing title #2","lost a title to Radoš on goal difference","everyone is in the shop window"]},
-    {"name":"Ante Babić","team":"Rubenovi obrazi","titles":0,"persona":["loudest when roasting others","draft-pick grievance specialist"],"running_jokes":["success means still setting waivers late in season","low-pick complaint department"]},
-    {"name":"Marko Mihaljević","team":"Borova Glava","titles":1,"persona":["recent champion","fitness trainer"],"running_jokes":["conditioning and recovery metaphors","clients and gym vs waiver deadline"]},
-    {"name":"Ivan Vrdoljak","team":"HNK Grboreški Biser","titles":0,"persona":["historic lower-table regular","current revival candidate"],"running_jokes":["yo-yo club if relegation existed","Luke Milivojević-era nostalgia","doctor of everything when winning"]},
-    {"name":"Jakov Vrdoljak","team":"NK Rasulo","titles":0,"persona":["policeman","lower-table regular"],"running_jokes":["patrolling the lower half","navlakuša doctrine","second season waiting for Wirtz"]},
-    {"name":"Kristian Radoš","team":"Oranje","titles":2,"persona":["two-time champion","conservative manager"],"running_jokes":["often skips waivers","old phone / internet jokes","2019 strategy still works"]},
-    {"name":"Karlo Medić","team":"FC Hudi","titles":1,"persona":["youngest member","defending champion"],"running_jokes":["first-pick privilege","Haaland safety net","od govana pita","golden-touch waivers"]}
+    {"name":"Viktor Kovač","team":"Tekstilac Derventa","titles":2,"persona":["self-styled Special One","serial contender"],"running_jokes":["Tradegate / kumovska era as league lore","Liverpool goalkeeper 90th-minute title mythology","Tarik Muharemović = Rolls-Royce"],"rivalries":["Andrej Radić","Lovro Radić"]},
+    {"name":"Luka Marinović","team":"Markuševec City","titles":1,"persona":["league president","permanent trader"],"running_jokes":["inaugural champion still chasing title #2","lost a title to Orlić on goal difference","everyone is in the shop window"]},
+    {"name":"Filip Božić","team":"Rubenovi obrazi","titles":0,"persona":["loudest when roasting others","draft-pick grievance specialist"],"running_jokes":["success means still setting waivers late in season","low-pick complaint department"]},
+    {"name":"Mateo Kovačić","team":"Borova Glava","titles":1,"persona":["recent champion","fitness trainer"],"running_jokes":["conditioning and recovery metaphors","clients and gym vs waiver deadline"]},
+    {"name":"Andrej Radić","team":"HNK Grboreški Biser","titles":0,"persona":["historic lower-table regular","current revival candidate"],"running_jokes":["yo-yo club if relegation existed","Luke Milivojević-era nostalgia","doctor of everything when winning"]},
+    {"name":"Lovro Radić","team":"NK Rasulo","titles":0,"persona":["policeman","lower-table regular"],"running_jokes":["patrolling the lower half","navlakuša doctrine","second season waiting for Wirtz"]},
+    {"name":"Bruno Orlić","team":"Oranje","titles":2,"persona":["two-time champion","conservative manager"],"running_jokes":["often skips waivers","old phone / internet jokes","2019 strategy still works"]},
+    {"name":"Niko Marinović","team":"FC Hudi","titles":1,"persona":["youngest member","defending champion"],"running_jokes":["first-pick privilege","Haaland safety net","od govana pita","golden-touch waivers"]}
   ]
 }
