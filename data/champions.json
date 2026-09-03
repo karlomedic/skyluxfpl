@@ -1,13 +1,13 @@
 {
   "champions": [
-    {"season":"2017/18","winner":"Petar Medić","team":"Markuševec City"},
-    {"season":"2018/19","winner":"Marin Buneta","team":""},
-    {"season":"2019/20","winner":"Kristian Radoš","team":"Oranje"},
-    {"season":"2020/21","winner":"Robert Tokić","team":"Tekstilac Derventa"},
-    {"season":"2021/22","winner":"Kristian Radoš","team":"Oranje"},
-    {"season":"2022/23","winner":"Martin Vukadin","team":""},
-    {"season":"2023/24","winner":"Robert Tokić","team":"Tekstilac Derventa"},
-    {"season":"2024/25","winner":"Marko Mihaljević","team":"Borova Glava"},
-    {"season":"2025/26","winner":"Karlo Medić","team":"FC Hudi"}
+    {"season":"2017/18","winner":"Luka Marinović","team":"Markuševec City"},
+    {"season":"2018/19","winner":"Dario Lovrić","team":""},
+    {"season":"2019/20","winner":"Bruno Orlić","team":"Oranje"},
+    {"season":"2020/21","winner":"Viktor Kovač","team":"Tekstilac Derventa"},
+    {"season":"2021/22","winner":"Bruno Orlić","team":"Oranje"},
+    {"season":"2022/23","winner":"Nikola Savić","team":""},
+    {"season":"2023/24","winner":"Viktor Kovač","team":"Tekstilac Derventa"},
+    {"season":"2024/25","winner":"Mateo Kovačić","team":"Borova Glava"},
+    {"season":"2025/26","winner":"Niko Marinović","team":"FC Hudi"}
   ]
 }
