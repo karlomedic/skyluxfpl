@@ -101,13 +101,18 @@ function pointStatLabel(id=''){return POINT_STAT_LABELS[id]||String(id).replaceA
 function pointStatValue(id,value){if(value===undefined||value===null||value==='')return'';return id==='minutes'?`${value} min`:`× ${value}`}
 function playerBreakdownRows(player){
   const groups=new Map();
-  for(const fixture of asArray(player?.liveEl?.explain)){
-    for(const stat of asArray(fixture?.stats)){
-      const identifier=String(stat?.identifier||'').trim(),points=num(stat?.points,0),value=num(stat?.value,0);
-      if(!identifier||points===0)continue;
-      if(!groups.has(identifier))groups.set(identifier,{identifier,points:0,value:0});
-      const row=groups.get(identifier);row.points+=points;row.value+=value
+  const addStat=stat=>{
+    const identifier=String(stat?.identifier??stat?.stat??'').trim(),points=num(stat?.points,0),value=num(stat?.value,0);
+    if(!identifier||points===0)return;
+    if(!groups.has(identifier))groups.set(identifier,{identifier,points:0,value:0});
+    const row=groups.get(identifier);row.points+=points;row.value+=value
+  };
+  for(const block of asArray(player?.liveEl?.explain)){
+    if(Array.isArray(block)&&Array.isArray(block[0])){
+      for(const stat of block[0])addStat(stat);
+      continue
     }
+    for(const stat of asArray(block?.stats))addStat(stat)
   }
   return[...groups.values()]
 }
