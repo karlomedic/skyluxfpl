@@ -1,4 +1,6 @@
 const squadPicksCache=new Map();
+const playerPopupData=new Map();
+let playerPointsModalBound=false;
 
 function lineupsAvailableForGw(gw){
   const n=num(gw,0),current=num(state.currentGw,0),event=currentEventInfo(n);
@@ -7,15 +9,40 @@ function lineupsAvailableForGw(gw){
   return Boolean(deadline&&Date.now()>=deadline)
 }
 
+function liveElementMap(live){
+  const src=live?.elements;
+  if(Array.isArray(src))return new Map(src.map(el=>[num(el?.id??el?.element,-1),el]).filter(([id])=>id>=0));
+  if(src&&typeof src==='object')return new Map(Object.entries(src).map(([key,el])=>[num(el?.id??el?.element??key,-1),el]).filter(([id])=>id>=0));
+  return new Map()
+}
+
+function fixtureStateForTeam(live,teamId){
+  const fixtures=asArray(live?.fixtures).filter(f=>num(f.team_h,-1)===num(teamId,-2)||num(f.team_a,-1)===num(teamId,-2));
+  return{
+    hasFixture:fixtures.length>0,
+    anyStarted:fixtures.some(f=>Boolean(f.started||f.finished||f.finished_provisional||num(f.minutes,0)>0)),
+    allFinished:fixtures.length>0&&fixtures.every(f=>Boolean(f.finished||f.finished_provisional))
+  }
+}
+
+function pointsArePending(gw,liveEl,fixtureState){
+  if(num(gw)!==num(state.currentGw))return false;
+  const minutes=num(liveEl?.stats?.minutes,0);
+  if(minutes>0)return false;
+  return !fixtureState.allFinished
+}
+
 async function getSquadSnapshot(entry,gw,live){
   if(!lineupsAvailableForGw(gw))throw new Error('Postave trenutno nisu dostupne.');
   const key=`${entry.entryId}:${gw}`;
   let data=squadPicksCache.get(key);
   if(!data){data=await fetchJson(`/api/entry/${entry.entryId}/event/${gw}`);squadPicksCache.set(key,data)}
-  const picks=extractPicks(data),pmap=playerMap(),pts=livePointMap(live),teams=new Map(asArray(state.bootstrap?.teams).map(t=>[num(t.id,-1),t]));
+  const picks=extractPicks(data),pmap=playerMap(),liveMap=liveElementMap(live),teams=new Map(asArray(state.bootstrap?.teams).map(t=>[num(t.id,-1),t]));
   const all=picks.map((p,i)=>{
-    const id=num(p.element??p.element_id??p.id,-1),player=pmap.get(id)||{},teamId=num(player.team??p.team,-1),club=teams.get(teamId)||{};
-    return{id,name:player.web_name||player.second_name||player.first_name||`Igrač ${id}`,type:num(player.element_type??p.element_type,0),position:num(p.position??p.pick_position??i+1,i+1),points:pts.has(id)?num(pts.get(id),0):num(p.points??p.total_points,0),teamId,teamCode:num(club.code??club.id,0),club:club.short_name||club.name||''}
+    const id=num(p.element??p.element_id??p.id,-1),player=pmap.get(id)||{},teamId=num(player.team??p.team,-1),club=teams.get(teamId)||{},liveEl=liveMap.get(id)||null;
+    const points=liveEl?num(liveEl?.stats?.total_points??liveEl?.total_points??liveEl?.points,0):num(p.points??p.total_points,0);
+    const fixtureState=fixtureStateForTeam(live,teamId),pending=pointsArePending(gw,liveEl,fixtureState);
+    return{id,name:player.web_name||player.second_name||player.first_name||`Igrač ${id}`,type:num(player.element_type??p.element_type,0),position:num(p.position??p.pick_position??i+1,i+1),points,displayPoints:pending?'—':String(points),pending,teamId,teamCode:num(club.code??club.id,0),club:club.short_name||club.name||'',liveEl,fixtureState,gw}
   }).sort((a,b)=>a.position-b.position);
   const start=all.filter((p,i)=>p.position<=11||(p.position===0&&i<11));
   const bench=all.filter((p,i)=>!(p.position<=11||(p.position===0&&i<11)));
@@ -53,15 +80,84 @@ function fplShirtUrl(player){
   const goalkeeper=player.type===1?'_1':'';
   return`https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${player.teamCode}${goalkeeper}-66.png`
 }
+
+const POINT_STAT_LABELS={
+  minutes:'Odigrane minute',
+  goals_scored:'Golovi',
+  assists:'Asistencije',
+  clean_sheets:'Clean sheet',
+  goals_conceded:'Primljeni golovi',
+  own_goals:'Autogolovi',
+  penalties_saved:'Obranjeni penali',
+  penalties_missed:'Promašeni penali',
+  yellow_cards:'Žuti kartoni',
+  red_cards:'Crveni kartoni',
+  saves:'Obrane',
+  bonus:'Bonus',
+  defensive_contribution:'Defenzivni doprinos',
+  starts:'Start u početnoj postavi'
+};
+function pointStatLabel(id=''){return POINT_STAT_LABELS[id]||String(id).replaceAll('_',' ').replace(/^./,c=>c.toUpperCase())}
+function pointStatValue(id,value){if(value===undefined||value===null||value==='')return'';return id==='minutes'?`${value} min`:`× ${value}`}
+function playerBreakdownRows(player){
+  const groups=new Map();
+  for(const fixture of asArray(player?.liveEl?.explain)){
+    for(const stat of asArray(fixture?.stats)){
+      const identifier=String(stat?.identifier||'').trim(),points=num(stat?.points,0),value=num(stat?.value,0);
+      if(!identifier||points===0)continue;
+      if(!groups.has(identifier))groups.set(identifier,{identifier,points:0,value:0});
+      const row=groups.get(identifier);row.points+=points;row.value+=value
+    }
+  }
+  return[...groups.values()]
+}
+function ensurePlayerPointsModal(){
+  let modal=qs('#playerPointsModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='playerPointsModal';
+    modal.className='player-points-modal';
+    modal.setAttribute('aria-hidden','true');
+    modal.innerHTML='<div class="player-points-backdrop" data-player-modal-close></div><section class="player-points-dialog" role="dialog" aria-modal="true" aria-labelledby="playerPointsTitle"><button class="player-points-close" type="button" aria-label="Zatvori" data-player-modal-close>×</button><div id="playerPointsContent"></div></section>';
+    document.body.appendChild(modal)
+  }
+  if(!playerPointsModalBound){
+    playerPointsModalBound=true;
+    document.addEventListener('click',e=>{
+      const chip=e.target.closest('.player-chip[data-player-id]');
+      if(chip){e.preventDefault();openPlayerPointsModal(chip.dataset.playerId);return}
+      if(e.target.closest('[data-player-modal-close]'))closePlayerPointsModal()
+    });
+    document.addEventListener('keydown',e=>{
+      const chip=e.target.closest?.('.player-chip[data-player-id]');
+      if(chip&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openPlayerPointsModal(chip.dataset.playerId)}
+      if(e.key==='Escape')closePlayerPointsModal()
+    })
+  }
+  return modal
+}
+function closePlayerPointsModal(){const modal=qs('#playerPointsModal');if(!modal)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('player-modal-open')}
+function openPlayerPointsModal(id){
+  const player=playerPopupData.get(String(id));if(!player)return;
+  const modal=ensurePlayerPointsModal(),content=qs('#playerPointsContent',modal),rows=playerBreakdownRows(player),score=player.pending?'—':String(player.points);
+  const breakdown=player.pending
+    ?'<div class="player-points-empty">Igrač još nije upisao minute. Bodovi će se pojaviti kad uđe u igru.</div>'
+    :rows.length
+      ?`<div class="player-points-list">${rows.map(r=>`<div class="player-points-row"><div><strong>${esc(pointStatLabel(r.identifier))}</strong><small>${esc(pointStatValue(r.identifier,r.value))}</small></div><b class="${r.points<0?'negative':'positive'}">${r.points>0?'+':''}${r.points}</b></div>`).join('')}</div>`
+      :`<div class="player-points-empty">${player.points===0?'Nema bodovnih stavki za ovaj nastup.':'Detaljna razrada bodova trenutno nije dostupna iz Draft API-ja.'}</div>`;
+  content.innerHTML=`<div class="player-points-head"><div><span>${esc(player.club||'Premier League')}</span><h2 id="playerPointsTitle">${esc(player.name)}</h2><p>GW ${num(player.gw)} · razrada bodova</p></div><div class="player-points-total"><strong>${esc(score)}</strong><small>${player.pending?'čeka nastup':'bodova'}</small></div></div>${breakdown}`;
+  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('player-modal-open');qs('.player-points-close',modal)?.focus()
+}
 function squadPlayerCard(p){
   const shirt=fplShirtUrl(p),club=p.club?` · ${p.club}`:'';
-  return`<div class="player-chip ${p.type===1?'gk':''}" title="${esc(p.name+club)}"><div class="player-shirt${shirt?'':' is-fallback'}">${shirt?`<img src="${shirt}" loading="lazy" decoding="async" alt="${esc(p.club||'Klupski dres')}" onerror="this.parentElement.classList.add('is-fallback');this.remove()">`:''}</div><strong>${esc(p.name)}</strong><span>${p.points} pts</span></div>`
+  playerPopupData.set(String(p.id),p);
+  return`<div class="player-chip ${p.type===1?'gk':''}" data-player-id="${p.id}" role="button" tabindex="0" aria-label="Otvori bodove za ${esc(p.name)}" title="${esc(p.name+club)} · klikni za bodove"><div class="player-shirt${shirt?'':' is-fallback'}">${shirt?`<img src="${shirt}" loading="lazy" decoding="async" alt="${esc(p.club||'Klupski dres')}" onerror="this.parentElement.classList.add('is-fallback');this.remove()">`:''}</div><strong>${esc(p.name)}</strong><span>${p.displayPoints==='—'?'—':`${p.displayPoints} pts`}</span></div>`
 }
 
 async function renderSquad(host,entry,gw,live,snapshot=null){
   if(!lineupsAvailableForGw(gw)){host.innerHTML='<div class="empty">Postave trenutno nisu dostupne.</div>';return null}
   host.innerHTML='<div class="loading">Dohvaćam postavu…</div>';
-  try{const snap=snapshot||await getSquadSnapshot(entry,gw,live),{start,bench}=snap;if(!start.length)throw new Error('No lineup');const rows=[1,2,3,4].map(t=>start.filter(p=>p.type===t)).filter(r=>r.length);host.innerHTML=`<div class="squad-head"><div><h2>${esc(entry.team)}</h2><p>${esc(entry.manager)}</p></div><span class="badge live">${snap.total} pts</span></div><div class="pitch">${rows.map(r=>`<div class="pitch-row">${r.map(squadPlayerCard).join('')}</div>`).join('')}</div><div class="bench"><div class="bench-title">Klupa</div><div class="bench-grid">${bench.map(squadPlayerCard).join('')||'<span class="manager-name">Nema podataka o klupi.</span>'}</div></div>`;return snap}catch(e){console.error(e);host.innerHTML='<div class="empty">Postava za ovo kolo trenutno nije dostupna iz Draft API-ja.</div>';return null}
+  try{const snap=snapshot||await getSquadSnapshot(entry,gw,live),{start,bench}=snap;if(!start.length)throw new Error('No lineup');ensurePlayerPointsModal();const rows=[1,2,3,4].map(t=>start.filter(p=>p.type===t)).filter(r=>r.length);host.innerHTML=`<div class="squad-head"><div><h2>${esc(entry.team)}</h2><p>${esc(entry.manager)}</p></div><span class="badge live">${snap.total} pts</span></div><div class="pitch">${rows.map(r=>`<div class="pitch-row">${r.map(squadPlayerCard).join('')}</div>`).join('')}</div><div class="bench"><div class="bench-title">Klupa</div><div class="bench-grid">${bench.map(squadPlayerCard).join('')||'<span class="manager-name">Nema podataka o klupi.</span>'}</div></div>`;return snap}catch(e){console.error(e);host.innerHTML='<div class="empty">Postava za ovo kolo trenutno nije dostupna iz Draft API-ja.</div>';return null}
 }
 
 function renderShame(target){const host=typeof target==='string'?qs(target):target;if(!host)return;const m=shameMetrics();host.innerHTML=m.map(x=>`<article class="shame-card"><div class="shame-icon">${x.icon}</div><div class="shame-label">${esc(x.label)}</div><div class="shame-value">${esc(x.value)}</div><div class="shame-sub">${esc(x.sub)}</div></article>`).join('')||'<div class="empty">Hall of Shame čeka prve završene rezultate.</div>'}
