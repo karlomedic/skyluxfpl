@@ -89,6 +89,9 @@ body[data-page="match"] .player-chip{
   text-align:center;
   box-shadow:none;
 }
+body[data-page="match"] .player-chip[data-player-id]{cursor:pointer;outline:0;transition:transform .14s ease,filter .14s ease}
+body[data-page="match"] .player-chip[data-player-id]:hover{transform:translateY(-2px);filter:brightness(1.04)}
+body[data-page="match"] .player-chip[data-player-id]:focus-visible strong{outline:2px solid #102419;outline-offset:2px}
 body[data-page="match"] .player-shirt{
   height:48px;
   display:grid;
@@ -162,6 +165,29 @@ body[data-page="match"] .bench .player-chip.gk .player-shirt.is-fallback::before
 body[data-page="match"] .bench .player-chip strong{font-size:.6rem}
 body[data-page="match"] .bench .player-chip span{font-size:.62rem}
 
+body.player-modal-open{overflow:hidden}
+.player-points-modal{position:fixed;inset:0;z-index:140;display:none;align-items:center;justify-content:center;padding:18px}
+.player-points-modal.open{display:flex}
+.player-points-backdrop{position:absolute;inset:0;background:rgba(3,9,5,.74);backdrop-filter:blur(7px)}
+.player-points-dialog{position:relative;z-index:1;width:min(440px,100%);max-height:min(680px,calc(100vh - 36px));overflow:auto;border:1px solid rgba(255,255,255,.14);border-radius:18px;background:#f7f9f8;color:#122219;box-shadow:0 28px 90px rgba(0,0,0,.48)}
+.player-points-close{position:absolute;right:12px;top:12px;z-index:2;width:34px;height:34px;border:1px solid rgba(16,36,25,.13);border-radius:50%;background:#fff;color:#17251d;font-size:1.4rem;line-height:1;cursor:pointer}
+.player-points-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:22px 54px 18px 20px;border-bottom:1px solid rgba(10,40,24,.1);background:#fff}
+.player-points-head span{display:block;color:#1f8f45;font-size:.65rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.player-points-head h2{margin:0;color:#102419;font-size:1.42rem;letter-spacing:-.035em}
+.player-points-head p{margin:5px 0 0;color:#718078;font-size:.7rem}
+.player-points-total{text-align:center;min-width:68px;padding:9px 10px;border-radius:12px;background:#16251c;color:#fff}
+.player-points-total strong{display:block;font-size:1.45rem;line-height:1;font-weight:900}
+.player-points-total small{display:block;margin-top:4px;color:#b8c5bd;font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.player-points-list{padding:8px 16px 16px}
+.player-points-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 4px;border-bottom:1px solid rgba(10,40,24,.09)}
+.player-points-row:last-child{border-bottom:0}
+.player-points-row strong{display:block;color:#15241b;font-size:.82rem}
+.player-points-row small{display:block;color:#7b8981;font-size:.65rem;margin-top:3px}
+.player-points-row b{min-width:44px;text-align:center;padding:6px 8px;border-radius:9px;font-size:.82rem}
+.player-points-row b.positive{background:#e3f7e9;color:#14733a}
+.player-points-row b.negative{background:#ffe8e6;color:#bd3d38}
+.player-points-empty{margin:16px;padding:16px;border:1px solid rgba(10,40,24,.1);border-radius:12px;background:#eef3f0;color:#5f7066;font-size:.78rem;line-height:1.55}
+
 @media(max-width:760px){
   body[data-page="match"] .squad-panel{border-radius:14px}
   body[data-page="match"] .pitch{min-height:410px;margin:10px;padding:32px 5px 17px}
@@ -178,6 +204,10 @@ body[data-page="match"] .bench .player-chip span{font-size:.62rem}
   body[data-page="match"] .bench .player-shirt{height:38px}
   body[data-page="match"] .bench .player-shirt img{height:36px;max-width:48px}
   body[data-page="match"] .bench .player-shirt.is-fallback::before{width:35px;height:33px}
+  .player-points-modal{padding:10px;align-items:flex-end}
+  .player-points-dialog{width:100%;max-height:82vh;border-radius:18px 18px 12px 12px}
+  .player-points-head{padding:20px 52px 16px 17px}
+  .player-points-head h2{font-size:1.22rem}
 }
 
 @media(max-width:390px){
