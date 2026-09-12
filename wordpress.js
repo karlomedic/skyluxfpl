@@ -32,6 +32,7 @@
   function wpTitle(post){return post?.title?.rendered??post?.title??'Bez naslova'}
   function wpExcerpt(post){return post?.excerpt?.rendered??post?.excerpt??''}
   function wpContent(post){return post?.content?.rendered??post?.content??''}
+  function articleAuthor(post){return String(wpId(post))==='79'?'Robert M.':'Davorin O.'}
   function normalizePosts(value){
     if(Array.isArray(value))return value;
     if(Array.isArray(value?.posts))return value.posts;
@@ -68,7 +69,7 @@
         const title=htmlText(wpTitle(post));
         let excerpt=htmlText(wpExcerpt(post));
         excerpt=excerpt.replace(/\s*\[…\]\s*$/,'').replace(/\s*\[&hellip;\]\s*$/,'');
-        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>Davorin O.</span><span>${escapeHtml(formatDate(post.date))}</span></div></a>`;
+        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span></div></a>`;
       }).join('');
     }catch(e){
       console.error('WordPress posts error',e);
@@ -111,7 +112,7 @@
       const title=htmlText(wpTitle(post));
       document.title=`${title} · SkyLux FPL`;
       if(titleEl)titleEl.textContent=title;
-      if(metaEl)metaEl.innerHTML=`<span>Davorin O.</span><span>${escapeHtml(formatDate(post.date))}</span>`;
+      if(metaEl)metaEl.innerHTML=`<span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span>`;
       if(host)host.innerHTML=sanitizeArticleHtml(wpContent(post));
     }catch(e){
       console.error('WordPress article error',e);
