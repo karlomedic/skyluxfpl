@@ -37,7 +37,7 @@
   };
 
   const wp=document.createElement('script');
-  wp.src='/wordpress.js?v=20260902-4';
+  wp.src='/wordpress.js?v=20260912-5';
   wp.onload=loadPage;
   wp.onerror=()=>{console.warn('WordPress integracija se nije učitala');loadPage()};
   document.head.appendChild(wp);
