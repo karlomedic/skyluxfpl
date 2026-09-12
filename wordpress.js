@@ -52,6 +52,15 @@
     return postsPromise;
   }
 
+  async function commentCount(id){
+    try{
+      const r=await fetch(`/api/comments/${encodeURIComponent(id)}`,{cache:'no-store',headers:{Accept:'application/json'}});
+      if(!r.ok)return 0;
+      const data=await r.json();
+      return Array.isArray(data?.comments)?data.comments.length:0;
+    }catch{return 0}
+  }
+
   function removeLegacyBlogLinks(){
     document.querySelectorAll(WP_LINK_SELECTOR).forEach(a=>a.remove());
   }
@@ -64,12 +73,13 @@
     try{
       const posts=(await fetchPosts()).slice(0,count);
       if(!posts.length){host.innerHTML='<div class="empty">Redakcija priprema novi tekst.</div>';return}
-      host.innerHTML=posts.map(post=>{
+      const counts=await Promise.all(posts.map(post=>commentCount(wpId(post))));
+      host.innerHTML=posts.map((post,index)=>{
         const id=wpId(post);
         const title=htmlText(wpTitle(post));
         let excerpt=htmlText(wpExcerpt(post));
         excerpt=excerpt.replace(/\s*\[…\]\s*$/,'').replace(/\s*\[&hellip;\]\s*$/,'');
-        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span></div></a>`;
+        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span><span>💬 ${counts[index]}</span></div></a>`;
       }).join('');
     }catch(e){
       console.error('WordPress posts error',e);
