@@ -65,7 +65,6 @@
     document.querySelectorAll(WP_LINK_SELECTOR).forEach(a=>a.remove());
   }
 
-  // Replace the original static article renderer before page.js boots.
   window.renderLatestNews=async function(target,count=3){
     const host=typeof target==='string'?document.querySelector(target):target;
     if(!host)return;
@@ -116,13 +115,16 @@
       return;
     }
     try{
-      const r=await fetch(`/api/article/${id}`,{cache:'no-store',headers:{Accept:'application/json'}});
+      const [r,count]=await Promise.all([
+        fetch(`/api/article/${id}`,{cache:'no-store',headers:{Accept:'application/json'}}),
+        commentCount(id)
+      ]);
       if(!r.ok){const text=await r.text().catch(()=>'');throw new Error(`WordPress ${r.status}${text?` · ${text.slice(0,120)}`:''}`)}
       const post=await r.json();
       const title=htmlText(wpTitle(post));
       document.title=`${title} · SkyLux FPL`;
       if(titleEl)titleEl.textContent=title;
-      if(metaEl)metaEl.innerHTML=`<span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span>`;
+      if(metaEl)metaEl.innerHTML=`<span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span><a href="#commentsTitle" aria-label="Idi na komentare" style="color:inherit;text-decoration:none;cursor:pointer">💬 ${count}</a>`;
       if(host)host.innerHTML=sanitizeArticleHtml(wpContent(post));
     }catch(e){
       console.error('WordPress article error',e);
