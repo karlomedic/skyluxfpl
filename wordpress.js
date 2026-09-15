@@ -32,7 +32,12 @@
   function wpTitle(post){return post?.title?.rendered??post?.title??'Bez naslova'}
   function wpExcerpt(post){return post?.excerpt?.rendered??post?.excerpt??''}
   function wpContent(post){return post?.content?.rendered??post?.content??''}
-  function articleAuthor(post){return String(wpId(post))==='79'?'Robert M.':'Davorin O.'}
+  function articleAuthor(post){
+    const id=String(wpId(post));
+    if(id==='79')return'Robert M.';
+    if(id==='81')return'Robert Matteoni';
+    return'Davorin O.';
+  }
   function normalizePosts(value){
     if(Array.isArray(value))return value;
     if(Array.isArray(value?.posts))return value.posts;
