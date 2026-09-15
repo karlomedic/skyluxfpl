@@ -34,8 +34,7 @@
   function wpContent(post){return post?.content?.rendered??post?.content??''}
   function articleAuthor(post){
     const id=String(wpId(post));
-    if(id==='79')return'Robert M.';
-    if(id==='81')return'Robert Matteoni';
+    if(id==='79'||id==='81')return'Robert M.';
     return'Davorin O.';
   }
   function normalizePosts(value){
