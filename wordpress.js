@@ -21,6 +21,7 @@
 
   function articleType(title){
     const t=title.toLowerCase();
+    if(t.includes('oko osijekovo'))return'Oko Osijekovo';
     if(t.includes('preview'))return'Preview';
     if(t.includes('recap'))return'Recap';
     if(t.includes('waiver'))return'Waiver';
@@ -34,6 +35,8 @@
   function wpContent(post){return post?.content?.rendered??post?.content??''}
   function articleAuthor(post){
     const id=String(wpId(post));
+    const title=htmlText(wpTitle(post)).toLowerCase();
+    if(title.includes('oko osijekovo'))return'Mateo B.';
     if(id==='79'||id==='81')return'Robert M.';
     return'Davorin O.';
   }
