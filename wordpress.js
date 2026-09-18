@@ -37,7 +37,7 @@
     const id=String(wpId(post));
     const title=htmlText(wpTitle(post)).toLowerCase();
     if(title.includes('oko osijekovo'))return'Mateo B.';
-    if(id==='79'||id==='81')return'Robert M.';
+    if(id==='79'||id==='81'||id==='83')return'Robert M.';
     return'Davorin O.';
   }
   function normalizePosts(value){
