@@ -11,6 +11,7 @@ async function initTeam(){
   if(!entry){qs('#teamView').innerHTML='<div class="notice">Ekipa nije pronađena.</div>';return}
   document.title=`${entry.team} · SkyLux FPL`;
   qs('#teamName').textContent=entry.team;qs('#teamManager').textContent=entry.manager;
+  const photo=qs('#teamManagerPhoto');if(photo){const slug={'Petar Medić':'petar%20medic.jpg','Marko Mihaljević':'marko%20mihaljevic.jpg','Ante Babić':'ante%20babic.jpg','Ivan Vrdoljak':'ivan%20vrdoljak.jpg','Karlo Medić':'karlo%20medic.jpg','Jakov Vrdoljak':'jakov%20vrdoljak.jpg','Robert Tokić':'robert%20tokic.jpg','Kristian Radoš':'kristian%20rado%C5%A1.jpg'}[entry.manager];if(slug){photo.src='/assets/about/'+slug;photo.alt=entry.manager;photo.hidden=false}}
   const standing=standingsRows().find(r=>r.id===id);
   if(standing)qs('#teamStats').innerHTML=`<div><small>Pozicija</small><strong>#${standing.rank}</strong></div><div><small>H2H bodovi</small><strong>${standing.h2h}</strong></div><div><small>Omjer</small><strong>${standing.won}-${standing.drawn}-${standing.lost}</strong></div><div><small>Fantasy bodovi</small><strong>${standing.for}</strong></div>`;
   const entries=entryMap(),matches=asArray(state.league?.matches).filter(m=>num(m.league_entry_1)===id||num(m.league_entry_2)===id).sort((a,b)=>num(a.event)-num(b.event));
