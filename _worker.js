@@ -324,6 +324,11 @@ export default {
     const entryGw = url.pathname.match(/^\/api\/entry\/(\d+)\/event\/(\d+)$/);
     if (entryGw) return proxy(`/api/entry/${entryGw[1]}/event/${entryGw[2]}`, 20);
 
-    return env.ASSETS.fetch(request);
+    const assetResponse = await env.ASSETS.fetch(request);
+    if (assetResponse.status === 404 && url.pathname === '/team.html') {
+      const fallback = new URL('/team.html', url);
+      return env.ASSETS.fetch(new Request(fallback, request));
+    }
+    return assetResponse;
   },
 };
