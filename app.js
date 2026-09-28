@@ -6,6 +6,7 @@
   }
 
   const nav=document.querySelector('#mainNav');
+  if(nav&&!nav.querySelector('a[href="/predictor.html"]')){const p=document.createElement('a');p.href='/predictor.html';p.dataset.nav='predictor';p.textContent='Predictor';const fame=nav.querySelector('a[data-nav="fame"]');nav.insertBefore(p,fame||null);}
   if(nav&&!nav.querySelector('a[href="/about.html"]')){
     const link=document.createElement('a');
     link.href='/about.html';link.dataset.nav='about';link.textContent='O nama';
@@ -31,7 +32,7 @@
 
   const loadPage=()=>{
     const s=document.createElement('script');
-    s.src='/page.js?v=20260921-8';
+    s.src='/page.js?v=20260928-1';
     s.onerror=()=>{console.error('page.js se nije učitao');const t=document.querySelector('#toast');if(t){t.textContent='Aplikacija se nije učitala.';t.className='toast show error'}};
     document.head.appendChild(s);
   };
