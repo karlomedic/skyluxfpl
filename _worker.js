@@ -75,6 +75,18 @@ const WORDPRESS_BASE = 'https://public-api.wordpress.com/wp/v2/sites/fplskylux.w
 const WORDPRESS_SITE = 'https://public-api.wordpress.com/rest/v1.1/sites/fplskylux.wordpress.com';
 const WORDPRESS_HOME = 'https://fplskylux.wordpress.com/';
 const LEAGUE_ID = 13174;
+const PREDICTOR_USERS = [
+  { manager: 'Petar Medić', team: 'Markuševec City', hash: '9f445aa1cfe3536e583afa75a64dbd236b1ea60276b445548b93a66f1a1b5534' },
+  { manager: 'Marko Mihaljević', team: 'Borova Glava', hash: '47d90e6721fcc3c0411f635134fa270d4753e9ebfd8e62ed2a81e88aec7668f7' },
+  { manager: 'Ante Babić', team: 'Rubenovi obrazi', hash: 'd0724944e406243c4c55db1debba0efe3102bbe28b376fcc567376421c5645ba' },
+  { manager: 'Ivan Vrdoljak', team: 'HNK Grboreški Biser', hash: '545a0404555347efe742e159fe5bb5febfb49f349eab37d209dd930dc5fbe3d1' },
+  { manager: 'Karlo Medić', team: 'FC Hudi', hash: '062ee3312b0f4734972d25edd05a91f74f110aa46878833d63534001ebab5b67' },
+  { manager: 'Jakov Vrdoljak', team: 'NK Rasulo', hash: 'f15591855e348d92d4b9b401bff8a053b07440a5b636f7763751989eb9628abf' },
+  { manager: 'Robert Tokić', team: 'Tekstilac Derventa', hash: 'd927db0344fb529c5a37acc6e6bf6b0965b5479f104a3c1d5fe97659fa36d7cd' },
+  { manager: 'Kristian Radoš', team: 'Oranje', hash: 'efa091ea04fc59ff983db103cc987446fe97e06bf097896d0271bc643fbc1a83' }
+];
+async function sha256(value){const data=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',data);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -266,6 +278,17 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+
+    if (url.pathname === '/api/predictor/auth') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
+      let payload; try { payload = await request.json(); } catch { return json({ error: 'Neispravan zahtjev.' }, 400); }
+      const key = String(payload?.key || '').trim();
+      if (!key || key.length > 100) return json({ error: 'Neispravan ključ.' }, 401);
+      const hash = await sha256(key), user = PREDICTOR_USERS.find(x => x.hash === hash);
+      if (!user) return json({ error: 'Neispravan ključ.' }, 401);
+      return json({ ok: true, user: { manager: user.manager, team: user.team } });
+    }
+
     if (url.pathname === '/api/league') return proxy(`/api/league/${LEAGUE_ID}/details`, 15);
     if (url.pathname === '/api/bootstrap') return proxy('/api/bootstrap-static', 300);
     if (url.pathname === '/api/element-status') return proxy(`/api/league/${LEAGUE_ID}/element-status`, 20);
@@ -325,7 +348,7 @@ export default {
     if (entryGw) return proxy(`/api/entry/${entryGw[1]}/event/${entryGw[2]}`, 20);
 
     const assetResponse = await env.ASSETS.fetch(request);
-    if (assetResponse.status === 404 && (url.pathname === '/team.html' || url.pathname === '/predictor.html')) {
+    if (assetResponse.status === 404 && url.pathname === '/team.html') {
       const fallback = new URL('/team.html', url);
       return env.ASSETS.fetch(new Request(fallback, request));
     }
