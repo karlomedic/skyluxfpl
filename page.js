@@ -54,7 +54,7 @@ async function predictorAuth(key){
 }
 async function predictorGate(){
   const gate=qs('#predictorGate'),form=qs('#predictorLoginForm'),input=qs('#predictorKey'),err=qs('#predictorLoginError'),identity=qs('#predictorIdentity');
-  const unlock=user=>{gate.classList.add('unlocked');gate.setAttribute('aria-hidden','true');identity.hidden=false;identity.innerHTML=\`<span>Igraš kao</span><strong>\${esc(user.manager)}</strong><small>\${esc(user.team)}</small><button type="button" id="predictorLogout">Odjava</button>\`;qs('#predictorLogout').onclick=()=>{localStorage.removeItem('skylux-predictor-key');location.reload()}};
+  const unlock=user=>{gate.classList.add('unlocked');gate.style.display='none';gate.setAttribute('aria-hidden','true');identity.hidden=false;identity.innerHTML=`<span>Igraš kao</span><strong>${esc(user.manager)}</strong><small>${esc(user.team)}</small><button type="button" id="predictorLogout">Odjava</button>`;qs('#predictorLogout').onclick=()=>{localStorage.removeItem('skylux-predictor-key');location.reload()}};
   const saved=localStorage.getItem('skylux-predictor-key');if(saved){try{const x=await predictorAuth(saved);unlock(x.user);return x.user}catch{localStorage.removeItem('skylux-predictor-key')}}
   gate.classList.remove('unlocked');input.focus();
   return new Promise(resolve=>{form.addEventListener('submit',async e=>{e.preventDefault();err.textContent='';const key=input.value.trim();if(!key)return;const btn=form.querySelector('button');btn.disabled=true;btn.textContent='PROVJERAVAM…';try{const x=await predictorAuth(key);localStorage.setItem('skylux-predictor-key',key);unlock(x.user);resolve(x.user)}catch{err.textContent='Ključ nije ispravan.'}finally{btn.disabled=false;btn.textContent='ULAZ'}},{once:false})});
