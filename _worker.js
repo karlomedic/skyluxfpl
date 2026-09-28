@@ -75,6 +75,7 @@ const WORDPRESS_BASE = 'https://public-api.wordpress.com/wp/v2/sites/fplskylux.w
 const WORDPRESS_SITE = 'https://public-api.wordpress.com/rest/v1.1/sites/fplskylux.wordpress.com';
 const WORDPRESS_HOME = 'https://fplskylux.wordpress.com/';
 const LEAGUE_ID = 13174;
+// Predictor auth deployment refresh: 2026-09-28
 const PREDICTOR_USERS = [
   { manager: 'Petar Medić', team: 'Markuševec City', hash: '9f445aa1cfe3536e583afa75a64dbd236b1ea60276b445548b93a66f1a1b5534' },
   { manager: 'Marko Mihaljević', team: 'Borova Glava', hash: '47d90e6721fcc3c0411f635134fa270d4753e9ebfd8e62ed2a81e88aec7668f7' },
