@@ -50,14 +50,15 @@ function drawPredictorSummary(){
 }
 async function predictorAuth(key){
   const r=await fetch('/api/predictor/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});
-  if(!r.ok)throw new Error('INVALID_KEY');return r.json();
+  const raw=await r.text();let data=null;try{data=JSON.parse(raw)}catch{}
+  if(!r.ok||!data?.ok||!data?.user)throw new Error(`AUTH_${r.status}:${raw.slice(0,120)}`);return data;
 }
 async function predictorGate(){
   const gate=qs('#predictorGate'),form=qs('#predictorLoginForm'),input=qs('#predictorKey'),err=qs('#predictorLoginError'),identity=qs('#predictorIdentity');
   const unlock=user=>{gate.classList.add('unlocked');gate.style.display='none';gate.setAttribute('aria-hidden','true');identity.hidden=false;identity.innerHTML=`<span>Igraš kao</span><strong>${esc(user.manager)}</strong><small>${esc(user.team)}</small><button type="button" id="predictorLogout">Odjava</button>`;qs('#predictorLogout').onclick=()=>{localStorage.removeItem('skylux-predictor-key');location.reload()}};
   const saved=localStorage.getItem('skylux-predictor-key');if(saved){try{const x=await predictorAuth(saved);unlock(x.user);return x.user}catch{localStorage.removeItem('skylux-predictor-key')}}
   gate.classList.remove('unlocked');input.focus();
-  return new Promise(resolve=>{form.addEventListener('submit',async e=>{e.preventDefault();err.textContent='';const key=input.value.trim();if(!key)return;const btn=form.querySelector('button');btn.disabled=true;btn.textContent='PROVJERAVAM…';try{const x=await predictorAuth(key);localStorage.setItem('skylux-predictor-key',key);unlock(x.user);resolve(x.user)}catch{err.textContent='Ključ nije ispravan.'}finally{btn.disabled=false;btn.textContent='ULAZ'}},{once:false})});
+  return new Promise(resolve=>{form.addEventListener('submit',async e=>{e.preventDefault();err.textContent='';const key=input.value.trim();if(!key)return;const btn=form.querySelector('button');btn.disabled=true;btn.textContent='PROVJERAVAM…';try{const x=await predictorAuth(key);localStorage.setItem('skylux-predictor-key',key);unlock(x.user);resolve(x.user)}catch(ex){console.error('Predictor auth:',ex);err.textContent=ex.message.startsWith('AUTH_401')?'Ključ nije ispravan.':`Greška prijave: ${ex.message}`}finally{btn.disabled=false;btn.textContent='ULAZ'}},{once:false})});
 }
 async function initPredictor(){
   await predictorGate();
