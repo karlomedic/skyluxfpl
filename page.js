@@ -73,6 +73,19 @@ async function initPredictor(){
   qsa('.predictor-option,.predictor-team-option').forEach(btn=>btn.addEventListener('click',()=>{const box=btn.closest('[data-market]');predictorChoice(box.dataset.market,btn.dataset.value,btn.dataset.label,num(btn.dataset.mult));qsa('.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x===btn))}));
   qsa('[data-market]').forEach(box=>{const raw=localStorage.getItem(predictorPickKey(gw,box.dataset.market));if(raw)try{const p=JSON.parse(raw);qsa('.predictor-option,.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x.dataset.value===String(p.value)))}catch{}});
   drawPredictorSummary();
+  const submit=qs('#predictorSubmit'),slip=qs('#predictorSlip');
+  const marketTitle=m=>m.startsWith('match-')?`Meč ${num(m.split('-')[1])+1}`:m==='best'?'Najbolja ekipa kola':'Najgora ekipa kola';
+  const drawSlip=()=>{
+    const rows=[];
+    qsa('[data-market]').forEach(box=>{const raw=localStorage.getItem(predictorPickKey(gw,box.dataset.market));if(raw)try{rows.push({market:box.dataset.market,...JSON.parse(raw)})}catch{}});
+    if(rows.length!==6){slip.hidden=false;slip.innerHTML='<strong>Prognoza nije potpuna</strong><span>Odaberi svih 6 prognoza prije potvrde.</span>';return}
+    localStorage.setItem(`skylux-predictor-submitted:${gw}`,'1');
+    slip.hidden=false;slip.innerHTML=`<div class="predictor-slip-head"><div><span>TVOJE PROGNOZE</span><strong>GW${gw} · 6/6 potvrđeno</strong></div><small>Možeš mijenjati odabire do zaključavanja kola.</small></div><div class="predictor-slip-list">${rows.map(p=>`<button type="button" data-edit-market="${esc(p.market)}"><span>${marketTitle(p.market)}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></button>`).join('')}</div>`;
+    qsa('[data-edit-market]',slip).forEach(btn=>btn.onclick=()=>{const box=qs(`[data-market="${btn.dataset.editMarket}"]`);if(box){box.scrollIntoView({behavior:'smooth',block:'center'});box.classList.add('predictor-editing');setTimeout(()=>box.classList.remove('predictor-editing'),1200)}});
+    submit.textContent='AŽURIRAJ PROGNOZE';
+  };
+  submit.onclick=drawSlip;
+  if(localStorage.getItem(`skylux-predictor-submitted:${gw}`)==='1')drawSlip();
 }
 
 async function initMini(){const s=qs('#miniSelect'),blocks=[{id:1,start:1,end:7,label:'GW 1–7'},{id:2,start:8,end:14,label:'GW 8–14'},{id:3,start:15,end:21,label:'GW 15–21'},{id:4,start:22,end:28,label:'GW 22–28'},{id:5,start:29,end:35,label:'GW 29–35'}],available=blocks.filter(b=>b.start<=state.currentGw),shown=available.length?available:[blocks[0]],cur=blockForGw(state.currentGw);s.innerHTML=shown.map(b=>`<option value="${b.id}">Mini ${b.id} · ${b.label}</option>`).join('');s.value=String(shown.some(b=>b.id===cur.id)?cur.id:shown[shown.length-1].id);const draw=()=>{const id=num(s.value,1),b=blocks.find(x=>x.id===id)||shown[0],through=Math.min(state.currentGw,b.end);qs('#miniPageTitle').textContent=`Mini-prvenstvo ${b.id}`;qs('#miniPageRange').textContent=b.label;qs('#miniProgress').textContent=state.currentGw>b.end?'Završeno':`Trenutno GW${state.currentGw}`;renderMiniTable('#miniPageTable',b,through,false)};s.addEventListener('change',draw);draw()}
