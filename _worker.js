@@ -325,7 +325,7 @@ export default {
     if (entryGw) return proxy(`/api/entry/${entryGw[1]}/event/${entryGw[2]}`, 20);
 
     const assetResponse = await env.ASSETS.fetch(request);
-    if (assetResponse.status === 404 && url.pathname === '/team.html') {
+    if (assetResponse.status === 404 && (url.pathname === '/team.html' || url.pathname === '/predictor.html')) {
       const fallback = new URL('/team.html', url);
       return env.ASSETS.fetch(new Request(fallback, request));
     }
