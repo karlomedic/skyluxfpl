@@ -48,7 +48,19 @@ function drawPredictorSummary(){
   const total=picks.reduce((s,p)=>s+num(p.mult),0);
   host.innerHTML=picks.length?`<strong>${picks.length} / 6 odabira</strong><span>Maksimalno iz ovog kola: <b>${total.toFixed(2)} pts</b></span>`:'<strong>Još nema odabira</strong><span>Odaberi 1 / X / 2 za svaki par te najbolju i najgoru ekipu kola.</span>';
 }
+async function predictorAuth(key){
+  const r=await fetch('/api/predictor/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});
+  if(!r.ok)throw new Error('INVALID_KEY');return r.json();
+}
+async function predictorGate(){
+  const gate=qs('#predictorGate'),form=qs('#predictorLoginForm'),input=qs('#predictorKey'),err=qs('#predictorLoginError'),identity=qs('#predictorIdentity');
+  const unlock=user=>{gate.classList.add('unlocked');gate.setAttribute('aria-hidden','true');identity.hidden=false;identity.innerHTML=\`<span>Igraš kao</span><strong>\${esc(user.manager)}</strong><small>\${esc(user.team)}</small><button type="button" id="predictorLogout">Odjava</button>\`;qs('#predictorLogout').onclick=()=>{localStorage.removeItem('skylux-predictor-key');location.reload()}};
+  const saved=localStorage.getItem('skylux-predictor-key');if(saved){try{const x=await predictorAuth(saved);unlock(x.user);return x.user}catch{localStorage.removeItem('skylux-predictor-key')}}
+  gate.classList.remove('unlocked');input.focus();
+  return new Promise(resolve=>{form.addEventListener('submit',async e=>{e.preventDefault();err.textContent='';const key=input.value.trim();if(!key)return;const btn=form.querySelector('button');btn.disabled=true;btn.textContent='PROVJERAVAM…';try{const x=await predictorAuth(key);localStorage.setItem('skylux-predictor-key',key);unlock(x.user);resolve(x.user)}catch{err.textContent='Ključ nije ispravan.'}finally{btn.disabled=false;btn.textContent='ULAZ'}},{once:false})});
+}
 async function initPredictor(){
+  await predictorGate();
   const shown=homeGwDisplay(),gw=shown.gw,entries=entryMap(),matches=matchesForGw(gw),host=qs('#predictorMatches'),teams=qs('#predictorTeams');
   state.currentGw=gw;qs('#predictorGw').textContent=`GW${gw}`;
   const ev=currentEventInfo(gw),deadline=qs('#predictorDeadline');if(deadline)deadline.textContent=ev.deadline_time?`Zaključavanje: ${dateHr(ev.deadline_time)} · ${timeHr(ev.deadline_time)}`:'Odabiri se zaključavaju prije početka kola.';
