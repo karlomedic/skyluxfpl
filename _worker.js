@@ -16,7 +16,41 @@ export class ArticleComments extends DurableObject {
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS predictor_picks (
+        gw INTEGER NOT NULL,
+        manager TEXT NOT NULL,
+        team TEXT NOT NULL,
+        picks TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (gw, manager)
+      );
     `);
+  }
+
+
+  predictorSave(gw, manager, team, picks) {
+    const now=Date.now();
+    this.ctx.storage.sql.exec(
+      'INSERT OR REPLACE INTO predictor_picks (gw,manager,team,picks,updated_at) VALUES (?,?,?,?,?)',
+      gw,manager,team,JSON.stringify(picks),now
+    );
+    return {ok:true,updated_at:now};
+  }
+
+  predictorList(gw) {
+    return this.ctx.storage.sql.exec(
+      'SELECT manager,team,picks,updated_at FROM predictor_picks WHERE gw=? ORDER BY team',
+      gw
+    ).toArray().map(r=>({...r,picks:JSON.parse(r.picks||'[]')}));
+  }
+
+  predictorOne(gw, manager) {
+    const rows=this.ctx.storage.sql.exec(
+      'SELECT manager,team,picks,updated_at FROM predictor_picks WHERE gw=? AND manager=? LIMIT 1',
+      gw,manager
+    ).toArray();
+    if(!rows.length)return null;
+    const r=rows[0];return {...r,picks:JSON.parse(r.picks||'[]')};
   }
 
   cleanupMarioKovacevicComment() {
@@ -288,6 +322,35 @@ export default {
       const hash = await sha256(key), user = PREDICTOR_USERS.find(x => x.hash === hash);
       if (!user) return json({ error: 'Neispravan ključ.' }, 401);
       return json({ ok: true, user: { manager: user.manager, team: user.team } });
+    }
+
+
+    const predictorStore = env.ARTICLE_COMMENTS.getByName('predictor:global');
+    const predictorDeadline = async gw => {
+      const r=await fetch('https://draft.premierleague.com/api/bootstrap-static',{headers:{Accept:'application/json'}});
+      const b=await r.json();const ev=(b.events||[]).find(x=>Number(x.id)===Number(gw));
+      return ev?.deadline_time ? Date.parse(ev.deadline_time) : null;
+    };
+    if (url.pathname === '/api/predictor/picks' && request.method === 'POST') {
+      let p;try{p=await request.json()}catch{return json({error:'Neispravan zahtjev.'},400)}
+      const key=String(p?.key||'').trim(),hash=await sha256(key),user=PREDICTOR_USERS.find(x=>x.hash===hash);
+      if(!user)return json({error:'Neispravan ključ.'},401);
+      const gw=Number(p?.gw),picks=Array.isArray(p?.picks)?p.picks:[];
+      if(!Number.isInteger(gw)||gw<1||gw>38||picks.length>6)return json({error:'Neispravne prognoze.'},400);
+      const deadline=await predictorDeadline(gw);if(deadline&&Date.now()>=deadline)return json({error:'Prognoze su zaključane.'},423);
+      await predictorStore.predictorSave(gw,user.manager,user.team,picks);
+      return json({ok:true,user:{manager:user.manager,team:user.team},gw,picks});
+    }
+    if (url.pathname === '/api/predictor/mine' && request.method === 'POST') {
+      let p;try{p=await request.json()}catch{return json({error:'Neispravan zahtjev.'},400)}
+      const hash=await sha256(String(p?.key||'').trim()),user=PREDICTOR_USERS.find(x=>x.hash===hash);
+      if(!user)return json({error:'Neispravan ključ.'},401);
+      return json({ok:true,picks:await predictorStore.predictorOne(Number(p.gw),user.manager)});
+    }
+    if (url.pathname === '/api/predictor/reveal' && request.method === 'GET') {
+      const gw=Number(url.searchParams.get('gw')),deadline=await predictorDeadline(gw);
+      if(deadline&&Date.now()<deadline)return json({locked:true,deadline},403);
+      return json({ok:true,gw,entries:await predictorStore.predictorList(gw),deadline});
     }
 
     if (url.pathname === '/api/league') return proxy(`/api/league/${LEAGUE_ID}/details`, 15);
