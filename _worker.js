@@ -327,7 +327,7 @@ export default {
 
     const predictorStore = env.ARTICLE_COMMENTS.getByName('predictor:global');
     const predictorDeadline = async gw => {
-      const r=await fetch('https://draft.premierleague.com/api/bootstrap-static',{headers:{Accept:'application/json'}});
+      const r=await fetch('https://fantasy.premierleague.com/api/bootstrap-static/',{headers:{Accept:'application/json','User-Agent':'SkyLux-FPL-Draft/3.0'}});
       const b=await r.json();const ev=(b.events||[]).find(x=>Number(x.id)===Number(gw));
       return ev?.deadline_time ? Date.parse(ev.deadline_time) : null;
     };
