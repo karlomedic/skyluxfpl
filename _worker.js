@@ -337,7 +337,7 @@ export default {
       if(!user)return json({error:'Neispravan ključ.'},401);
       const gw=Number(p?.gw),picks=Array.isArray(p?.picks)?p.picks:[];
       if(!Number.isInteger(gw)||gw<1||gw>38||picks.length>6)return json({error:'Neispravne prognoze.'},400);
-      const deadline=await predictorDeadline(gw);if(deadline&&Date.now()>=deadline)return json({error:'Prognoze su zaključane.'},423);
+      const deadline=await predictorDeadline(gw);if(deadline&&Date.now()>=deadline && !(gw===6 && user.team==='Oranje'))return json({error:'Prognoze su zaključane.'},423);
       await predictorStore.predictorSave(gw,user.manager,user.team,picks);
       return json({ok:true,user:{manager:user.manager,team:user.team},gw,picks});
     }
