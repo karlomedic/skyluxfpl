@@ -73,7 +73,7 @@ async function initPredictor(){
   qsa('.predictor-option,.predictor-team-option').forEach(btn=>btn.addEventListener('click',()=>{const box=btn.closest('[data-market]');predictorChoice(box.dataset.market,btn.dataset.value,btn.dataset.label,num(btn.dataset.mult));qsa('.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x===btn))}));
   qsa('[data-market]').forEach(box=>{const raw=localStorage.getItem(predictorPickKey(gw,box.dataset.market));if(raw)try{const p=JSON.parse(raw);qsa('.predictor-option,.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x.dataset.value===String(p.value)))}catch{}});
   drawPredictorSummary();
-  const locked=Boolean(ev.deadline_time&&Date.now()>=Date.parse(ev.deadline_time)) && !(gw===6 && predictorUser?.team==='Oranje');
+  const locked=Boolean(ev.deadline_time&&Date.now()>=Date.parse(ev.deadline_time));
   if(locked){
     qsa('.predictor-option,.predictor-team-option').forEach(btn=>{btn.disabled=true;btn.setAttribute('aria-disabled','true');btn.style.cursor='not-allowed';});
   }
