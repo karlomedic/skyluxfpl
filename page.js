@@ -75,19 +75,36 @@ async function initPredictor(){
   drawPredictorSummary();
   const submit=qs('#predictorSubmit'),slip=qs('#predictorSlip');
   const marketTitle=m=>m.startsWith('match-')?`Meč ${num(m.split('-')[1])+1}`:m==='best'?'Najbolja ekipa kola':'Najgora ekipa kola';
-  const drawSlip=()=>{
+  const drawSlip=async()=>{
     const rows=[];
     qsa('[data-market]').forEach(box=>{const raw=localStorage.getItem(predictorPickKey(gw,box.dataset.market));if(raw)try{rows.push({market:box.dataset.market,...JSON.parse(raw)})}catch{}});
     if(rows.length!==6){slip.hidden=false;slip.innerHTML='<strong>Prognoza nije potpuna</strong><span>Odaberi svih 6 prognoza prije potvrde.</span>';return}
     const key=localStorage.getItem('skylux-predictor-key')||'';
-    fetch('/api/predictor/picks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,gw,picks:rows})}).then(async r=>{if(!r.ok){const x=await r.json().catch(()=>({}));throw new Error(x.error||'Spremanje nije uspjelo.')}return r.json()}).then(()=>{localStorage.setItem(`skylux-predictor-submitted:${gw}`,'1')}).catch(ex=>{slip.hidden=false;slip.innerHTML=`<strong>Spremanje nije uspjelo</strong><span>${esc(ex.message)}</span>`});
-    localStorage.setItem(`skylux-predictor-submitted:${gw}`,'1');
+    submit.disabled=true;submit.textContent='SPREMANJE...';
+    try {
+      const response=await fetch('/api/predictor/picks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,gw,picks:rows})});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(result.error||'Spremanje nije uspjelo.');
+      localStorage.setItem(`skylux-predictor-submitted:${gw}`,'1');
+    } catch(error) {
+      slip.hidden=false;slip.innerHTML=`<strong>Prognoza nije spremljena</strong><span>${esc(error.message)}</span>`;
+      submit.disabled=false;submit.textContent='POTVRDI PROGNOZE';return;
+    }
+    submit.disabled=false;
     slip.hidden=false;slip.innerHTML=`<div class="predictor-slip-head"><div><span>TVOJE PROGNOZE</span><strong>GW${gw} · 6/6 potvrđeno</strong></div><small>Možeš mijenjati odabire do zaključavanja kola.</small></div><div class="predictor-slip-list">${rows.map(p=>`<button type="button" data-edit-market="${esc(p.market)}"><span>${marketTitle(p.market)}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></button>`).join('')}</div>`;
     qsa('[data-edit-market]',slip).forEach(btn=>btn.onclick=()=>{const box=qs(`[data-market="${btn.dataset.editMarket}"]`);if(box){box.scrollIntoView({behavior:'smooth',block:'center'});box.classList.add('predictor-editing');setTimeout(()=>box.classList.remove('predictor-editing'),1200)}});
     submit.textContent='AŽURIRAJ PROGNOZE';
   };
   submit.onclick=drawSlip;
-  if(localStorage.getItem(`skylux-predictor-submitted:${gw}`)==='1')drawSlip();
+  const key=localStorage.getItem('skylux-predictor-key')||'';
+  if(key)fetch('/api/predictor/mine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,gw})}).then(r=>r.ok?r.json():null).then(data=>{
+    if(!data?.picks?.picks?.length)return;
+    data.picks.picks.forEach(p=>{localStorage.setItem(predictorPickKey(gw,p.market),JSON.stringify(p));const box=qs(`[data-market="${p.market}"]`);if(box)qsa('.predictor-option,.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x.dataset.value===String(p.value)))});
+    drawPredictorSummary();
+    slip.hidden=false;slip.innerHTML='<strong>Prognoze su spremljene na serveru.</strong><span>Možeš ih pregledati i ažurirati do deadlinea.</span>';
+    submit.textContent='AŽURIRAJ PROGNOZE';
+  }).catch(()=>{});
+
   const reveal=qs('#predictorReveal');
   if(reveal)fetch(`/api/predictor/reveal?gw=${gw}`).then(async r=>{if(r.status===403)return null;if(!r.ok)throw new Error();return r.json()}).then(data=>{if(!data)return;const entries=data.entries||[];reveal.innerHTML=entries.length?entries.map(e=>`<details class="predictor-manager"><summary><strong>${esc(e.team)}</strong><span>${esc(e.manager)}</span><em>${e.picks.length}/6</em></summary><div class="predictor-manager-picks">${e.picks.map(p=>`<div><span>${marketTitle(p.market)}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></div>`).join('')||'<span>Nema predanih prognoza.</span>'}</div></details>`).join(''):'<div class="empty">Nitko nije predao prognoze za ovo kolo.</div>'}).catch(()=>{});
 }
