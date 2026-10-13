@@ -1,7 +1,7 @@
 (function(){
   if(document.body.dataset.articlePage!=='true')return;
 
-  const postId=new URLSearchParams(location.search).get('id');
+  const postId=document.body.dataset.commentsId||new URLSearchParams(location.search).get('id');
   if(!postId||!/^[0-9]+$/.test(postId))return;
 
   const form=document.querySelector('#commentForm');
