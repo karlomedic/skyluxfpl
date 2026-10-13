@@ -133,7 +133,12 @@ async function initPredictorArchive(){
   const title=m=>m.startsWith('match-')?`Meč ${num(m.split('-')[1])+1}`:m==='best'?'Najbolja ekipa':'Najgora ekipa';
   const results=gw=>{
     const matches=matchesForGw(gw);
-    if(matches.length!==4||!matches.every(m=>m.finished))return null;
+    if(matches.length!==4)return null;
+    // Historical Draft fixtures sometimes omit the finished flag after a GW rollover.
+    // Only score rounds that have ended and have complete, numeric scores for all fixtures.
+    const event=events.find(e=>num(e.id)===gw);
+    const ended=event?.finished===true||event?.data_checked===true||gw<num(state.currentGw);
+    if(!ended||!matches.every(m=>m.league_entry_1_points!=null&&m.league_entry_2_points!=null))return null;
     const points=new Map();
     matches.forEach(m=>{const a=num(m.league_entry_1),b=num(m.league_entry_2),pa=num(m.league_entry_1_points),pb=num(m.league_entry_2_points);points.set(a,pa);points.set(b,pb)});
     if(points.size!==8)return null;
