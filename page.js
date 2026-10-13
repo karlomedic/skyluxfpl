@@ -110,10 +110,70 @@ async function initPredictor(){
     if(!locked)submit.textContent='AŽURIRAJ PROGNOZE';
   }).catch(()=>{});
 
-  const reveal=qs('#predictorReveal');
+  initPredictorArchive().catch(err=>console.error('Predictor archive:',err));
+  const reveal=null;
   if(reveal)fetch(`/api/predictor/reveal?gw=${gw}`).then(async r=>{if(r.status===403)return null;if(!r.ok)throw new Error();return r.json()}).then(data=>{if(!data)return;const entries=data.entries||[];reveal.innerHTML=entries.length?entries.map(e=>`<details class="predictor-manager"><summary><strong>${esc(e.team)}</strong><span>${esc(e.manager)}</span><em>${e.picks.length}/6</em></summary><div class="predictor-manager-picks">${e.picks.map(p=>`<div><span>${marketTitle(p.market)}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></div>`).join('')||'<span>Nema predanih prognoza.</span>'}</div></details>`).join(''):'<div class="empty">Nitko nije predao prognoze za ovo kolo.</div>'}).catch(()=>{});
 }
 
+async function initPredictorArchive(){
+  const reveal=qs('#predictorReveal'),board=qs('#predictorChampionship');
+  if(!reveal||!board)return;
+  const events=asArray(state.bootstrap?.events),today=Date.now();
+  const past=events.filter(e=>num(e.id)>=1&&e.deadline_time&&Date.parse(e.deadline_time)<=today).map(e=>num(e.id)).sort((a,b)=>b-a);
+  if(!past.length)return;
+  const current=num(state.currentGw),previous=past.find(g=>g<current)||past[0];
+  reveal.insertAdjacentHTML('beforebegin',`<div class="predictor-archive-picker" style="margin:12px 0"><label for="predictorArchiveGw">Pregled prognoza kola </label><select id="predictorArchiveGw">${past.map(g=>`<option value="${g}" ${g===previous?'selected':''}>GW${g}</option>`).join('')}</select></div>`);
+  const fetchRound=async gw=>{
+    const response=await fetch(`/api/predictor/reveal?gw=${gw}`,{cache:'no-store'});
+    if(!response.ok)return null;
+    return response.json();
+  };
+  const all=await Promise.all(past.map(async gw=>({gw,data:await fetchRound(gw).catch(()=>null)})));
+  const cache=new Map(all.map(x=>[x.gw,x.data]));
+  const title=m=>m.startsWith('match-')?`Meč ${num(m.split('-')[1])+1}`:m==='best'?'Najbolja ekipa':'Najgora ekipa';
+  const results=gw=>{
+    const matches=matchesForGw(gw);
+    if(matches.length!==4||!matches.every(m=>m.finished))return null;
+    const points=new Map();
+    matches.forEach(m=>{const a=num(m.league_entry_1),b=num(m.league_entry_2),pa=num(m.league_entry_1_points),pb=num(m.league_entry_2_points);points.set(a,pa);points.set(b,pb)});
+    if(points.size!==8)return null;
+    const high=Math.max(...points.values()),low=Math.min(...points.values());
+    return {matches,points,high,low};
+  };
+  const correct=(p,r)=>{
+    if(!r)return null;
+    if(p.market==='best')return r.points.get(num(p.value))===r.high;
+    if(p.market==='worst')return r.points.get(num(p.value))===r.low;
+    const idx=Number(String(p.market).split('-')[1]),m=r.matches[idx];
+    if(!m)return false;
+    const pa=num(m.league_entry_1_points),pb=num(m.league_entry_2_points);
+    const winner=pa===pb?'X':String(pa>pb?m.league_entry_1:m.league_entry_2);
+    return String(p.value)===winner;
+  };
+  const render=gw=>{
+    const data=cache.get(gw),entries=data?.entries||[],r=results(gw);
+    reveal.innerHTML=entries.length?entries.map(e=>{
+      const picks=Array.isArray(e.picks)?e.picks:[],score=r?picks.reduce((sum,p)=>sum+(correct(p,r)?num(p.mult):0),0):null;
+      return `<details class="predictor-manager"><summary><strong>${esc(e.team)}</strong><span>${esc(e.manager)}</span><em>${r?score.toFixed(2)+' bod.':picks.length+'/6'}</em></summary><div class="predictor-manager-picks">${picks.map(p=>{const ok=correct(p,r);return `<div><span>${title(p.market)} ${ok===null?'':ok?'✓':'✕'}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></div>`}).join('')||'<span>Nema predanih prognoza.</span>'}</div></details>`;
+    }).join(''):'<div class="empty">Nema spremljenih prognoza za ovo kolo.</div>';
+    if(!data)reveal.innerHTML='<div class="empty">Prognoze ovog kola još nisu dostupne.</div>';
+  };
+  const select=qs('#predictorArchiveGw');
+  select.onchange=()=>render(num(select.value));
+  render(previous);
+  const ranking=new Map();
+  for(const {gw,data} of all){
+    const r=results(gw);
+    if(!r||!data?.entries)continue;
+    for(const e of data.entries){
+      const key=e.team||e.manager,picks=Array.isArray(e.picks)?e.picks:[],earned=picks.reduce((sum,p)=>sum+(correct(p,r)?num(p.mult):0),0);
+      const row=ranking.get(key)||{team:e.team,manager:e.manager,total:0,rounds:0};
+      row.total+=earned;row.rounds++;ranking.set(key,row);
+    }
+  }
+  const rows=[...ranking.values()].sort((a,b)=>b.total-a.total||b.rounds-a.rounds);
+  board.innerHTML=rows.length?`<div style="overflow-x:auto"><table class="table"><thead><tr><th>#</th><th>Ekipa</th><th>Manager</th><th>Obračunata kola</th><th>Bodovi</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><strong>${esc(r.team)}</strong></td><td>${esc(r.manager)}</td><td>${r.rounds}</td><td><strong>${r.total.toFixed(2)}</strong></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Još nema završenih kola sa spremljenim prognozama za obračun.</div>';
+}
 async function initMini(){const s=qs('#miniSelect'),blocks=[{id:1,start:1,end:7,label:'GW 1–7'},{id:2,start:8,end:14,label:'GW 8–14'},{id:3,start:15,end:21,label:'GW 15–21'},{id:4,start:22,end:28,label:'GW 22–28'},{id:5,start:29,end:35,label:'GW 29–35'}],available=blocks.filter(b=>b.start<=state.currentGw),shown=available.length?available:[blocks[0]],cur=blockForGw(state.currentGw);s.innerHTML=shown.map(b=>`<option value="${b.id}">Mini ${b.id} · ${b.label}</option>`).join('');s.value=String(shown.some(b=>b.id===cur.id)?cur.id:shown[shown.length-1].id);const draw=()=>{const id=num(s.value,1),b=blocks.find(x=>x.id===id)||shown[0],through=Math.min(state.currentGw,b.end);qs('#miniPageTitle').textContent=`Mini-prvenstvo ${b.id}`;qs('#miniPageRange').textContent=b.label;qs('#miniProgress').textContent=state.currentGw>b.end?'Završeno':`Trenutno GW${state.currentGw}`;renderMiniTable('#miniPageTable',b,through,false)};s.addEventListener('change',draw);draw()}
 async function drawFixtures(gw){const host=qs('#fixtureGrid'),entries=entryMap(),ms=matchesForGw(gw);qs('#fixturesTitle').textContent=`GW ${gw}`;if(!ms.length){host.innerHTML='<div class="empty">Nema H2H parova za odabrano kolo.</div>';return}const live=lineupsAvailableForGw(gw)&&num(gw)===num(state.currentGw)?await getLive(gw):null;const rows=await Promise.all(ms.map(async m=>({m,scores:await getDisplayedMatchScores(m,gw,live,entries)})));host.innerHTML=rows.map(({m,scores})=>{const a=entries.get(num(m.league_entry_1))||{team:'—',manager:'—'},b=entries.get(num(m.league_entry_2))||{team:'—',manager:'—'},st=liveStatusForGw(gw,m);return`<a class="fixture-card" href="${matchUrl(m)}"><div class="fixture-row"><div class="fixture-team"><strong>${esc(a.team)}</strong><small>${esc(a.manager)}</small></div><div class="fixture-score">${scores.a} : ${scores.b}</div><div class="fixture-team"><strong>${esc(b.team)}</strong><small>${esc(b.manager)}</small></div></div><div class="fixture-meta"><span class="badge ${st.cls}">${st.label}</span><span>Otvori postave →</span></div></a>`}).join('')}
 async function initFixtures(){const s=qs('#gwSelect');s.innerHTML=Array.from({length:38},(_,i)=>`<option value="${i+1}">GW ${i+1}</option>`).join('');s.value=String(state.currentGw);s.addEventListener('change',()=>drawFixtures(num(s.value,state.currentGw)));await drawFixtures(state.currentGw)}
