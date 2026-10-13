@@ -75,12 +75,13 @@
   window.renderLatestNews=async function(target,count=3){
     const host=typeof target==='string'?document.querySelector(target):target;
     if(!host)return;
-    host.innerHTML='<div class="loading">Dohvaćam tekstove…</div>';
+    const featured=host.querySelector('[data-gw6-featured]')?.outerHTML||'';
+    host.innerHTML=featured+'<div class="loading">Dohvaćam tekstove…</div>';
     try{
       const posts=(await fetchPosts()).slice(0,count);
-      if(!posts.length){host.innerHTML='<div class="empty">Redakcija priprema novi tekst.</div>';return}
+      if(!posts.length){host.innerHTML=featured||'<div class="empty">Redakcija priprema novi tekst.</div>';return}
       const counts=await Promise.all(posts.map(post=>commentCount(wpId(post))));
-      host.innerHTML=posts.map((post,index)=>{
+      host.innerHTML=featured+posts.map((post,index)=>{
         const id=wpId(post);
         const title=htmlText(wpTitle(post));
         let excerpt=htmlText(wpExcerpt(post));
@@ -89,7 +90,7 @@
       }).join('');
     }catch(e){
       console.error('WordPress posts error',e);
-      host.innerHTML='<div class="empty">Članci trenutno nisu dostupni. Pokušaj ponovno za minutu.</div>';
+      host.innerHTML=featured||'<div class="empty">Članci trenutno nisu dostupni. Pokušaj ponovno za minutu.</div>';
     }
   };
 
