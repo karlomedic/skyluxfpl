@@ -88,6 +88,11 @@
         excerpt=excerpt.replace(/\s*\[…\]\s*$/,'').replace(/\s*\[&hellip;\]\s*$/,'');
         return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span><span>💬 ${counts[index]}</span></div></a>`;
       }).join('');
+      for(const [gw,id] of [[6,600006],[7,600007]]){
+        const node=host.querySelector('[data-gw'+gw+'-comment-count]');
+        if(!node)continue;
+        commentCount(id).then(n=>{const live=host.querySelector('[data-gw'+gw+'-comment-count]');if(live)live.textContent=String(n)}).catch(()=>{});
+      }
     }catch(e){
       console.error('WordPress posts error',e);
       host.innerHTML=featured||'<div class="empty">Članci trenutno nisu dostupni. Pokušaj ponovno za minutu.</div>';
