@@ -158,8 +158,8 @@ async function initPredictorArchive(){
   const render=gw=>{
     const data=cache.get(gw),entries=data?.entries||[],r=results(gw);
     reveal.innerHTML=entries.length?entries.map(e=>{
-      const picks=Array.isArray(e.picks)?e.picks:[],score=r?picks.reduce((sum,p)=>sum+(correct(p,r)?num(p.mult):0),0):null;
-      return `<details class="predictor-manager"><summary><strong>${esc(e.team)}</strong><span>${esc(e.manager)}</span><em>${r?score.toFixed(2)+' bod.':picks.length+'/6'}</em></summary><div class="predictor-manager-picks">${picks.map(p=>{const ok=correct(p,r);return `<div><span>${title(p.market)} ${ok===null?'':ok?'✓':'✕'}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></div>`}).join('')||'<span>Nema predanih prognoza.</span>'}</div></details>`;
+      const picks=Array.isArray(e.picks)?e.picks:[],score=r?picks.reduce((sum,p)=>sum+(correct(p,r)?num(p.mult):0),0):null,maxPoints=picks.reduce((sum,p)=>sum+num(p.mult),0);
+      return `<details class="predictor-manager"><summary><strong>${esc(e.team)}</strong><span>${esc(e.manager)}</span><em>${r?score.toFixed(2)+' bod.':picks.length+'/6'}</em></summary><div class="predictor-manager-picks">${picks.map(p=>{const ok=correct(p,r);return `<div><span>${title(p.market)} ${ok===null?'':ok?'✓':'✕'}</span><strong>${esc(p.label)}</strong><em>${num(p.mult).toFixed(2)}x</em></div>`}).join('')||'<span>Nema predanih prognoza.</span>'}<div class="predictor-max-points"><strong>Maksimalni broj bodova</strong><em>${maxPoints.toFixed(2)} bod.</em></div></div></details>`;
     }).join(''):'<div class="empty">Nema spremljenih prognoza za ovo kolo.</div>';
     if(!data)reveal.innerHTML='<div class="empty">Prognoze ovog kola još nisu dostupne.</div>';
   };
