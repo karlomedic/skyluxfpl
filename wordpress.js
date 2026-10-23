@@ -75,7 +75,7 @@
   window.renderLatestNews=async function(target,count=3){
     const host=typeof target==='string'?document.querySelector(target):target;
     if(!host)return;
-    const featured=[...host.querySelectorAll('[data-gw7-featured],[data-gw6-featured]')].map(el=>el.outerHTML).join('');
+    const featured=[...host.querySelectorAll('[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')].map(el=>el.outerHTML).join('');
     host.innerHTML=featured+'<div class="loading">Dohvaćam tekstove…</div>';
     try{
       const posts=(await fetchPosts()).slice(0,count);
