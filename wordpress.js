@@ -75,20 +75,28 @@
   window.renderLatestNews=async function(target,count=3){
     const host=typeof target==='string'?document.querySelector(target):target;
     if(!host)return;
-    const featured=[...host.querySelectorAll('[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')].map(el=>el.outerHTML).join('');
+    const editorial=host.id==='editorialNews';
+    const staticCards=editorial?[...document.querySelectorAll('.editorial-static-article')]:[...host.querySelectorAll('[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')];
+    const featured=staticCards.map(el=>el.outerHTML).join('');
     host.innerHTML=featured+'<div class="loading">Dohvaćam tekstove…</div>';
     try{
       const posts=(await fetchPosts()).slice(0,count);
       if(!posts.length){host.innerHTML=featured||'<div class="empty">Redakcija priprema novi tekst.</div>';return}
       const counts=await Promise.all(posts.map(post=>commentCount(wpId(post))));
-      host.innerHTML=featured+posts.map((post,index)=>{
+      host.innerHTML=(editorial?'':featured)+posts.map((post,index)=>{
         const id=wpId(post);
         const title=htmlText(wpTitle(post));
         let excerpt=htmlText(wpExcerpt(post));
         excerpt=excerpt.replace(/\s*\[…\]\s*$/,'').replace(/\s*\[&hellip;\]\s*$/,'');
         return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span><span>💬 ${counts[index]}</span></div></a>`;
       }).join('');
-      for(const [gw,id] of [[6,600006],[7,600007]]){
+      if(editorial){
+        const cards=[...staticCards.map(el=>({date:Date.parse(el.dataset.published||'1970-01-01'),html:el.outerHTML})),...posts.map((post,index)=>({date:Date.parse(post.date||'1970-01-01'),html:host.children[index]?.outerHTML||''}))];
+        cards.sort((a,b)=>(Number.isFinite(b.date)?b.date:0)-(Number.isFinite(a.date)?a.date:0));
+        host.innerHTML=cards.map(x=>x.html).join('');
+        staticCards.forEach(el=>el.remove());
+      }
+      for(const [gw,id] of [[6,600006],[7,600007],[8,600008]]){
         const node=host.querySelector('[data-gw'+gw+'-comment-count]');
         if(!node)continue;
         commentCount(id).then(n=>{const live=host.querySelector('[data-gw'+gw+'-comment-count]');if(live)live.textContent=String(n)}).catch(()=>{});
