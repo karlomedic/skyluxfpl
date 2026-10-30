@@ -1,0 +1,1 @@
+(function(){const nodes=document.querySelectorAll('[data-gw9-preview-comment-count]');if(!nodes.length)return;fetch('/api/comments/600010',{cache:'no-store'}).then(r=>r.json()).then(d=>{const n=Array.isArray(d.comments)?d.comments.length:0;nodes.forEach(e=>e.textContent=String(n))}).catch(()=>{});})();
