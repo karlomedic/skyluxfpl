@@ -76,7 +76,7 @@
     const host=typeof target==='string'?document.querySelector(target):target;
     if(!host)return;
     const editorial=host.id==='editorialNews';
-    const staticCards=editorial?[...document.querySelectorAll('.editorial-static-article')]:[...host.querySelectorAll('[data-gw8-recap-featured],[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')];
+    const staticCards=editorial?[...document.querySelectorAll('.editorial-static-article')]:[...host.querySelectorAll('[data-gw9-featured],[data-gw8-recap-featured],[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')];
     const featured=staticCards.map(el=>el.outerHTML).join('');
     host.innerHTML=featured+'<div class="loading">Dohvaćam tekstove…</div>';
     try{
