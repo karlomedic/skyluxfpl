@@ -76,26 +76,41 @@
     const host=typeof target==='string'?document.querySelector(target):target;
     if(!host)return;
     const editorial=host.id==='editorialNews';
-    const staticCards=editorial?[...document.querySelectorAll('.editorial-static-article')]:[...host.querySelectorAll('[data-gw9-recap-featured],[data-gw9-featured],[data-gw8-recap-featured],[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')];
-    const featured=staticCards.map(el=>el.outerHTML).join('');
-    host.innerHTML=featured+'<div class="loading">Dohvaćam tekstove…</div>';
+    const home=host.id==='latestNews';
+    const limit=home?3:count;
+    const staticCards=editorial
+      ?[...document.querySelectorAll('.editorial-static-article')]
+      :[...host.querySelectorAll('[data-gw9-recap-featured],[data-gw9-featured],[data-gw8-recap-featured],[data-gw8-featured],[data-gw7-featured],[data-gw6-featured]')];
+    const staticDates={
+      'gw9-recap.html':'2026-11-03',
+      'gw9-preview.html':'2026-10-30',
+      'gw8-recap.html':'2026-10-26',
+      'gw8-preview.html':'2026-10-23',
+      'gw7-preview.html':'2026-10-17',
+      'gw6-recap.html':'2026-10-01'
+    };
+    const staticItems=staticCards.map(el=>{
+      const href=el.getAttribute('href')||'';
+      const file=href.split('/').pop();
+      const date=el.dataset.published||staticDates[file]||'1970-01-01';
+      return {date:Date.parse(date)||0,html:el.outerHTML};
+    });
+    const renderItems=items=>items.sort((a,b)=>b.date-a.date).slice(0,limit).map(x=>x.html).join('');
+    host.innerHTML=renderItems(staticItems)+'<div class="loading">Dohvaćam tekstove…</div>';
     try{
-      const posts=(await fetchPosts()).slice(0,count);
-      if(!posts.length){host.innerHTML=featured||'<div class="empty">Redakcija priprema novi tekst.</div>';return}
-      const counts=await Promise.all(posts.map(post=>commentCount(wpId(post))));
-      host.innerHTML=(editorial?'':featured)+posts.map((post,index)=>{
+      const posts=await fetchPosts();
+      const candidates=editorial?posts:posts.slice(0,Math.max(limit,10));
+      const counts=await Promise.all(candidates.map(post=>commentCount(wpId(post))));
+      const postItems=candidates.map((post,index)=>{
         const id=wpId(post);
         const title=htmlText(wpTitle(post));
         let excerpt=htmlText(wpExcerpt(post));
-        excerpt=excerpt.replace(/\s*\[…\]\s*$/,'').replace(/\s*\[&hellip;\]\s*$/,'');
-        return `<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span><span>💬 ${counts[index]}</span></div></a>`;
-      }).join('');
-      if(editorial){
-        const cards=[...staticCards.map(el=>({date:Date.parse(el.dataset.published||'1970-01-01'),html:el.outerHTML})),...posts.map((post,index)=>({date:Date.parse(post.date||'1970-01-01'),html:host.children[index]?.outerHTML||''}))];
-        cards.sort((a,b)=>(Number.isFinite(b.date)?b.date:0)-(Number.isFinite(a.date)?a.date:0));
-        host.innerHTML=cards.map(x=>x.html).join('');
-        staticCards.forEach(el=>el.remove());
-      }
+        excerpt=excerpt.replace(/\\s*\\[…\\]\\s*$/,'').replace(/\\s*\\[&hellip;\\]\\s*$/,'');
+        const html=`<a class="news-card" href="/article.html?id=${encodeURIComponent(id)}"><span class="news-type">${escapeHtml(articleType(title))}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(excerpt)}</p><div class="news-meta"><span>${escapeHtml(articleAuthor(post))}</span><span>${escapeHtml(formatDate(post.date))}</span><span>💬 ${counts[index]}</span></div></a>`;
+        return {date:Date.parse(post.date||'1970-01-01')||0,html};
+      });
+      host.innerHTML=renderItems([...staticItems,...postItems])||'<div class="empty">Redakcija priprema novi tekst.</div>';
+      if(editorial)staticCards.forEach(el=>el.remove());
       for(const [gw,id] of [[6,600006],[7,600007],[8,600008]]){
         const node=host.querySelector('[data-gw'+gw+'-comment-count]');
         if(!node)continue;
@@ -103,7 +118,7 @@
       }
     }catch(e){
       console.error('WordPress posts error',e);
-      host.innerHTML=featured||'<div class="empty">Članci trenutno nisu dostupni. Pokušaj ponovno za minutu.</div>';
+      host.innerHTML=renderItems(staticItems)||'<div class="empty">Članci trenutno nisu dostupni. Pokušaj ponovno za minutu.</div>';
     }
   };
 
