@@ -337,7 +337,21 @@ export default {
       if(!user)return json({error:'Neispravan ključ.'},401);
       const gw=Number(p?.gw),picks=Array.isArray(p?.picks)?p.picks:[];
       if(!Number.isInteger(gw)||gw<1||gw>38||picks.length>6)return json({error:'Neispravne prognoze.'},400);
-      const deadline=await predictorDeadline(gw);if(deadline&&Date.now()>=deadline)return json({error:'Prognoze su zaključane.'},423);
+      const deadline=await predictorDeadline(gw);
+      // Jednokratna iznimka po manageru: samo aktualno kolo prikazano u Predictoru.
+      let petarCurrentRound=false;
+      if(user.manager==='Petar Medić'&&deadline&&Date.now()>=deadline){
+        try{
+          const response=await fetch('https://fantasy.premierleague.com/api/bootstrap-static/',{headers:{Accept:'application/json','User-Agent':'SkyLux-FPL-Draft/3.0'}});
+          if(response.ok){
+            const data=await response.json(),events=data.events||[];
+            const current=events.find(e=>e.is_current)||events.find(e=>e.is_next);
+            const shown=current?.finished?(events.find(e=>e.is_next&&Number(e.id)>Number(current.id))||events.find(e=>Number(e.id)>Number(current.id)&&!e.finished)||current):current;
+            petarCurrentRound=Number(shown?.id)===gw;
+          }
+        }catch(e){console.error('Predictor exception round check failed',e)}
+      }
+      if(deadline&&Date.now()>=deadline&&!petarCurrentRound)return json({error:'Prognoze su zaključane.'},423);
       await predictorStore.predictorSave(gw,user.manager,user.team,picks);
       return json({ok:true,user:{manager:user.manager,team:user.team},gw,picks});
     }
