@@ -64,7 +64,7 @@ async function initPredictor(){
   const predictorUser=await predictorGate();
   const shown=homeGwDisplay(),gw=shown.gw,entries=entryMap(),matches=matchesForGw(gw),host=qs('#predictorMatches'),teams=qs('#predictorTeams');
   state.currentGw=gw;qs('#predictorGw').textContent=`GW${gw}`;
-  const ev=currentEventInfo(gw),deadline=qs('#predictorDeadline');if(deadline)deadline.textContent=predictorUser.manager==='Petar Medić'?'Posebno otključano za aktualno kolo · Petar Medić':(ev.deadline_time?`Zaključavanje: ${dateHr(ev.deadline_time)} · ${timeHr(ev.deadline_time)}`:'Odabiri se zaključavaju prije početka kola.');
+  const ev=currentEventInfo(gw),deadline=qs('#predictorDeadline');if(deadline)deadline.textContent=ev.deadline_time?`Zaključavanje: ${dateHr(ev.deadline_time)} · ${timeHr(ev.deadline_time)}`:'Odabiri se zaključavaju prije početka kola.';
   if(!matches.length){host.innerHTML='<div class="empty">Parovi za ovo kolo još nisu dostupni.</div>'}else{
     host.innerHTML=matches.map((m,i)=>{const a=entries.get(num(m.league_entry_1)),b=entries.get(num(m.league_entry_2)),v=predictorMatchValues(num(m.league_entry_1),num(m.league_entry_2)),market=`match-${i}`;return `<article class="predictor-card" data-market="${market}"><div class="predictor-match-head"><span>MEČ ${i+1}</span><strong>${esc(a?.team||'—')} <i>vs</i> ${esc(b?.team||'—')}</strong></div><div class="predictor-options"><button class="predictor-option" data-value="${num(m.league_entry_1)}" data-label="${esc(a?.team||'1')}" data-mult="${v.a}"><b>1</b><span>${esc(a?.team||'—')}</span><em>${v.a.toFixed(2)}x</em></button><button class="predictor-option draw" data-value="X" data-label="X" data-mult="${v.x}"><b>X</b><span>Neriješeno</span><em>${v.x.toFixed(2)}x</em></button><button class="predictor-option" data-value="${num(m.league_entry_2)}" data-label="${esc(b?.team||'2')}" data-mult="${v.b}"><b>2</b><span>${esc(b?.team||'—')}</span><em>${v.b.toFixed(2)}x</em></button></div></article>`}).join('');
   }
@@ -73,7 +73,7 @@ async function initPredictor(){
   qsa('.predictor-option,.predictor-team-option').forEach(btn=>btn.addEventListener('click',()=>{const box=btn.closest('[data-market]');predictorChoice(box.dataset.market,btn.dataset.value,btn.dataset.label,num(btn.dataset.mult));qsa('.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x===btn))}));
   qsa('[data-market]').forEach(box=>{const raw=localStorage.getItem(predictorPickKey(gw,box.dataset.market));if(raw)try{const p=JSON.parse(raw);qsa('.predictor-option,.predictor-team-option',box).forEach(x=>x.classList.toggle('selected',x.dataset.value===String(p.value)))}catch{}});
   drawPredictorSummary();
-  const locked=Boolean(ev.deadline_time&&Date.now()>=Date.parse(ev.deadline_time))&&predictorUser.manager!=='Petar Medić';
+  const locked=Boolean(ev.deadline_time&&Date.now()>=Date.parse(ev.deadline_time));
   if(locked){
     qsa('.predictor-option,.predictor-team-option').forEach(btn=>{btn.disabled=true;btn.setAttribute('aria-disabled','true');btn.style.cursor='not-allowed';});
   }
